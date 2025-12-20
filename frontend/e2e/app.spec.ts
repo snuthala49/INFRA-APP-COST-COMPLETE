@@ -50,6 +50,16 @@ test('calculate shows non-zero azure and gcp totals', async ({ page, baseURL }) 
   const photoImgs = page.locator('img.photo-bg-img');
   expect(await photoImgs.count()).toBeGreaterThanOrEqual(1);
 
+  // Check billing period selector exists and switch to annual
+  await page.getByRole('button', { name: 'Annual' }).click();
+  await page.waitForTimeout(200);
+
+  // Ensure the comparison table is visible and has a Monthly/price row
+  const table = page.locator('.pricing-table');
+  await expect(table).toBeVisible();
+  const monthlyRow = table.locator('tr').filter({ hasText: 'Monthly' }).first();
+  await expect(monthlyRow).toBeVisible();
+
   // Ensure pricing-stat chips and Details CTA exist in at least one card
   const firstStat = page.locator('[data-testid^="card-"]').first().locator('.stat-chip').first();
   await expect(firstStat).toBeVisible({ timeout: 3000 });

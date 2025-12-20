@@ -77,7 +77,13 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center text-xl relative" style={{border: '1px solid rgba(255,255,255,0.18)'}}>
             {imageMode === 'photo' ? (
-              <img src={`/assets/photo_${p}.svg`} alt="" aria-hidden className="photo-bg-img absolute inset-0 w-full h-full object-cover rounded-full opacity-90" />
+              <img
+                src={`/assets/photos/photo_${p}.jpg`}
+                alt=""
+                aria-hidden
+                className="photo-bg-img absolute inset-0 w-full h-full object-cover rounded-full opacity-90"
+                onError={(e) => { (e.target as HTMLImageElement).src = `/assets/photo_${p}.svg`; }}
+              />
             ) : null}
             <picture>
               <source srcSet={`/assets/${p}.svg`} type="image/svg+xml" />

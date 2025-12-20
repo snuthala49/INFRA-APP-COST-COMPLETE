@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import InputField from "../components/InputField";
 import DarkModeToggle from "../components/DarkModeToggle";
 import ProviderCard from "../components/ProviderCard";
+import OptionsPanel from "../components/OptionsPanel";
+import PricingTable from "../components/PricingTable";
 
 interface CostResult {
   provider: string;
@@ -22,6 +24,7 @@ export default function Home() {
   const [results, setResults] = useState<CostResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [tileMode, setTileMode] = useState<'illustration' | 'photo'>('illustration');
+  const [period, setPeriod] = useState<'monthly'|'6mo'|'annual'>('monthly');
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5001";
 
@@ -74,22 +77,8 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1 calculator-panel">
-          <h2 className="text-lg font-medium mb-3">Calculator</h2>
-          <div className="grid grid-cols-1 gap-3">
-            <InputField label="CPU (vCPUs)" value={cpu} onChange={setCpu} />
-            <InputField label="RAM (GB)" value={ram} onChange={setRam} />
-            <InputField label="Storage (GB)" value={storage} onChange={setStorage} />
-            <InputField label="Network (Mbps)" value={network} onChange={setNetwork} />
-            <InputField label="Backup (GB)" value={backup} onChange={setBackup} />
-          </div>
-          <button
-            onClick={handleCalculate}
-            data-testid="calculate-btn"
-            className="mt-4 w-full btn-primary py-3 text-lg"
-          >
-            {loading ? "Calculating..." : "Calculate"}
-          </button>
+        <div className="md:col-span-1">
+          <OptionsPanel cpu={cpu} ram={ram} storage={storage} network={network} backup={backup} setCpu={setCpu} setRam={setRam} setStorage={setStorage} setNetwork={setNetwork} setBackup={setBackup} period={period} setPeriod={(p) => setPeriod(p as any)} onCalculate={handleCalculate} loading={loading} />
         </div>
 
         <div className="md:col-span-2">
@@ -103,13 +92,15 @@ export default function Home() {
                 <div className="text-sm text-gray-400">Comparisons: {results.length}</div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex gap-4 overflow-x-auto hide-scrollbar py-2">
                 {results.map((r, idx) => (
-                  <div key={idx}>
-                    <ProviderCard provider={r.provider} total={r.total} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} imageMode={tileMode} />
+                  <div key={idx} className="min-w-[280px]">
+                    <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} imageMode={tileMode} />
                   </div>
                 ))}
               </div>
+
+              <PricingTable results={results} multiplier={period === 'monthly' ? 1 : period === '6mo' ? 0.9 : 0.8} />
             </>
           ) : (
             <div className="text-sm text-gray-500">No results yet — enter values and press Calculate</div>

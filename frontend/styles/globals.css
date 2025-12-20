@@ -161,3 +161,18 @@ body::before {
 .card.photo-mode { background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.9)); }
 }
 
+/* pricing layout helpers */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+.pricing-table th, .pricing-table td { padding-right: 1rem; padding-left: 0.25rem; }
+.pricing-table tr td { vertical-align: middle; }
+
+.plan-feature { color: var(--muted); font-size: 0.92rem; }
+
+.min-w-[280px] { min-width: 280px; }
+
+/* subtle separation for table area */
+.pricing-table tr:nth-child(odd) { background: transparent; }
+
+
