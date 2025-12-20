@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width="320" height="120" role="img" aria-label="Infrastructure scene">
+  <rect width="320" height="120" fill="none" />
+  <g transform="translate(8,16)">
+    <!-- Rack -->
+    <rect x="0" y="24" width="80" height="64" rx="6" fill="#EEF2FF" />
+    <rect x="8" y="34" width="64" height="10" rx="3" fill="#C7D2FE" />
+    <rect x="8" y="48" width="64" height="10" rx="3" fill="#C7D2FE" />
+
+    <!-- Server cluster -->
+    <rect x="100" y="8" width="96" height="80" rx="8" fill="#ECFEFF" />
+    <circle cx="148" cy="40" r="12" fill="#06B6D4" />
+
+    <!-- Storage -->
+    <rect x="212" y="32" width="88" height="48" rx="6" fill="#FFF7ED" />
+    <rect x="222" y="40" width="64" height="8" rx="3" fill="#FCD34D" />
+  </g>
+</svg>

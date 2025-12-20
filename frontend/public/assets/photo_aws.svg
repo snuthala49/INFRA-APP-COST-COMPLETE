@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90" width="160" height="90" role="img" aria-label="AWS photo-style background">
+  <defs>
+    <linearGradient id="g1" x1="0" x2="1">
+      <stop offset="0%" stop-color="#FFEDD5" />
+      <stop offset="100%" stop-color="#FF7A00" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="90" rx="12" fill="url(#g1)" />
+  <g fill="#ffffff" opacity="0.06">
+    <circle cx="26" cy="22" r="18" />
+    <circle cx="134" cy="68" r="18" />
+  </g>
+</svg>

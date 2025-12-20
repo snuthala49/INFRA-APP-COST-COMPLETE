@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* optional dark mode background */
+html.dark {
+  background-color: #1f2937;
+  color: white;
+}
+
+/* use Inter as primary font for a modern look */
+body {
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.font-sans { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+
+/* Mature color tokens */
+:root {
+  --bg-1: #f8fafc; /* blue-gray 50 */
+  --bg-2: #eef2f7; /* slightly warmer */
+  --muted: #64748b; /* slate-500 */
+  --brand-1: #4f46e5; /* indigo-600 */
+  --brand-2: #0ea5a3; /* teal-500 / cyan-ish */
+  --accent: #f59e0b; /* amber-500 */
+}
+
+/* subtle card and interactive details */
+.card {
+  transition: transform .16s ease, box-shadow .16s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(2,6,23,0.08);
+}
+
+/* calculator panel layout */
+.calculator-panel {
+  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,250,250,0.8));
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.04);
+}
+
+.provider-icon svg { width: 28px; height: 28px; }
+.provider-icon path, .provider-icon circle, .provider-icon rect { color: inherit; fill: currentColor; }
+/* provider image sizing */
+.provider-img { width: 28px; height: 28px; }
+
+.infra-illustration img { max-width: 160px; height: 64px; display: block; }
+
+/* polished input */
+.input-polished {
+  @apply border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+/* polished button */
+.btn-primary {
+  @apply bg-gradient-to-br from-indigo-600 to-cyan-500 text-white px-5 py-2 rounded shadow hover:opacity-95 focus:outline-none;
+}
+
+/* Global page background & header */
+html, body, .page-root {
+  height: 100%;
+}
+.page-root {
+  /* stronger contrast background so cards and tiles pop */
+  background: radial-gradient(800px 400px at 12% 12%, rgba(124,58,237,0.08), transparent),
+              linear-gradient(180deg, #f4f7ff, #ffffff);
+}
+
+/* Tech-savy vibrant theme */
+:root {
+  --vibrant-1: #7c3aed; /* purple */
+  --vibrant-2: #06b6d4; /* cyan */
+  --vibrant-3: #06d6a0; /* mint */
+  --neon: rgba(124,58,237,0.18);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(400px 200px at 85% 20%, var(--neon), transparent),
+              radial-gradient(300px 160px at 10% 80%, rgba(6,182,212,0.08), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.site-header {
+  position: relative;
+  z-index: 10;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(99,102,241,0.06);
+}
+
+.card { background-clip: padding-box; }
+
+/* Glassmorphism / neon accent for provider cards */
+.card { background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)); border-radius: 12px; }
+.card { position: relative; overflow: visible; }
+.card::before { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 12px; }
+.card .provider-img { filter: drop-shadow(0 8px 28px rgba(99,102,241,0.14)); width: 40px; height: 40px; }
+
+/* stronger colored accent on the left edge */
+.card-accent-left::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+
+.price-large { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; text-shadow: 0 2px 12px rgba(124,58,237,0.12); }
+
+/* chip/badge */
+.provider-chip { background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 9999px; font-size: 0.75rem; display: inline-flex; gap: 6px; align-items: center; }
+.provider-chip .dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; }
+
+/* cheapest highlight */
+.cheapest { box-shadow: 0 6px 30px rgba(124,58,237,0.12); transform: translateY(-6px); border: 1px solid rgba(124,58,237,0.18); }
+.cheapest .price-large { color: #5b21b6; }
+
+/* subtle hover */
+.card:hover .price-large { transform: translateY(-2px); transition: transform .18s ease; }
+
+/* small animations */
+@keyframes pulseGlow { 0% { box-shadow: 0 0 0 rgba(124,58,237,0.08);} 50% { box-shadow: 0 0 28px rgba(124,58,237,0.12);} 100% { box-shadow: 0 0 0 rgba(124,58,237,0.08);} }
+.cheapest.pulse { animation: pulseGlow 2.4s infinite; }
+
+/* Pricing tile stat chips */
+.stat-chip { background: rgba(15,23,42,0.04); padding: 8px 10px; border-radius: 10px; display: inline-flex; flex-direction: column; align-items: flex-start; min-width: 84px; }
+.stat-key { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
+.stat-val { font-weight: 700; margin-top: 2px; }
+
+/* Details button style */
+.card button { transition: all .12s ease; }
+.card button:hover { transform: translateY(-2px); }
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.site-title { font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; }
+.site-sub { color: var(--muted); font-size: 0.92rem; }
+
+/* Price emphasis in cards */
+.price-large { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+.price-meta { font-size: 0.8rem; color: var(--muted); }
+
+/* Infrastructure illustration in header */
+.infra-illustration { width: 160px; height: 64px; opacity: 0.95; }
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+  .infra-illustration { display: none; }
+}
+
+/* Photo background style for provider tile */
+.photo-bg-img { border-radius: 9999px; object-fit: cover; filter: contrast(1.05) saturate(1.08); }
+.photo-bg-img[alt=''] { /* decorative */ opacity: 0.95; }
+
+/* when photo mode is active, make card foreground slightly darker for readability */
+.card.photo-mode { background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.9)); }
+}
+

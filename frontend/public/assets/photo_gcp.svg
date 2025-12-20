@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 90" width="160" height="90" role="img" aria-label="GCP photo-style background">
+  <defs>
+    <linearGradient id="g3" x1="0" x2="1">
+      <stop offset="0%" stop-color="#E6F4EA" />
+      <stop offset="100%" stop-color="#1A73E8" />
+    </linearGradient>
+  </defs>
+  <rect width="160" height="90" rx="12" fill="url(#g3)" />
+  <g fill="#fff" opacity="0.06">
+    <circle cx="40" cy="30" r="12" />
+    <circle cx="120" cy="60" r="10" />
+  </g>
+</svg>

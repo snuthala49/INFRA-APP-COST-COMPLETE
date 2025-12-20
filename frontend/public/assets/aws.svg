@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="160" height="160" role="img" aria-label="AWS logo">
+  <rect width="64" height="64" rx="8" fill="#FF7A00" />
+  <g transform="translate(8,16)" fill="#FFF">
+    <rect x="0" y="10" width="48" height="10" rx="3" />
+    <rect x="8" y="24" width="32" height="10" rx="3" />
+  </g>
+</svg>

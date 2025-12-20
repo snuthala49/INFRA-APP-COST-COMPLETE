@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="160" height="160" role="img" aria-label="Kubernetes logo">
+  <rect width="64" height="64" rx="8" fill="#0EA5A3" />
+  <g transform="translate(6,6)" fill="#FFF" opacity="0.98">
+    <circle cx="26" cy="26" r="8" />
+    <path d="M26 4v8M26 44v8M4 26h8M44 26h8M10 10l6 6M38 38l6 6M38 14l6 6M10 42l6 6" stroke="#FFF" stroke-width="2.4" />
+  </g>
+</svg>
