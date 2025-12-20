@@ -72,82 +72,72 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
 
   try {
     return (
-    <div data-testid={`card-${p}`} className={`rounded-lg overflow-hidden shadow-sm border dark:border-gray-600 card ${imageMode === 'photo' ? 'photo-mode' : ''} ${cheapest ? 'cheapest pulse' : ''} card-accent-left`} style={{boxShadow: '0 6px 24px rgba(2,6,23,0.06)'}}>
-      <div style={{borderLeft: `6px solid ${accent[p] || '#ddd'}`}} className={`p-4 bg-gradient-to-br ${color} flex items-center justify-between gap-4`}>
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center text-xl relative" style={{border: '1px solid rgba(255,255,255,0.18)'}}>
+      <div data-testid={`card-${p}`} className={`plan-tile ${imageMode === 'photo' ? 'photo-mode' : ''} ${cheapest ? 'cheapest pulse' : ''} card-accent-left`} style={{boxShadow: '0 6px 28px rgba(2,6,23,0.06)'}}>
+        <div className="plan-header">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-md bg-white/10 flex items-center justify-center">
+              <picture>
+                <source srcSet={`/assets/${p}.svg`} type="image/svg+xml" />
+                <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain relative z-10" />
+              </picture>
+            </div>
+            <div>
+              <div className="plan-name">{provider}</div>
+              <div className="price-sub">per month • estimated</div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {cheapest ? <div className="provider-chip cheapest" aria-hidden><span className="dot" style={{background: accent[p]}} />Cheapest</div> : null}
+            <button className="text-sm bg-white/8 hover:bg-white/12 px-3 py-1 rounded">Details</button>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-end justify-between">
+          <div>
+            <div className="price-large">{currency ? new Intl.NumberFormat(undefined, {style:'currency', currency}).format(Number(total)) : String(total)}</div>
+            <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
+          </div>
+          <div className="w-20 h-20 rounded-md overflow-hidden relative">
             {imageMode === 'photo' ? (
               <img
                 src={`/assets/photos/photo_${p}.jpg`}
                 alt=""
                 aria-hidden
-                className="photo-bg-img absolute inset-0 w-full h-full object-cover rounded-full opacity-90"
+                className="photo-bg-img absolute inset-0 w-full h-full object-cover rounded-md opacity-90"
                 onError={(e) => { (e.target as HTMLImageElement).src = `/assets/photo_${p}.svg`; }}
               />
-            ) : null}
-            <picture>
-              <source srcSet={`/assets/${p}.svg`} type="image/svg+xml" />
-              <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain relative z-10" />
-            </picture>
+            ) : (
+              <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain" />
+            )}
           </div>
+        </div>
 
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-xs font-medium uppercase opacity-90">{provider}</div>
-                <div className="price-meta">per month • estimated</div>
+        <div className="mt-4 flex gap-2 flex-wrap">
+          {['cpu','ram','storage','network'].map((k) => (
+            breakdown && breakdown[k] !== undefined ? (
+              <div key={k} className="stat-chip">
+                <div className="stat-key">{k.toUpperCase()}</div>
+                <div className="stat-val">{k === 'ram' ? `${Number(breakdown[k])} GB` : k === 'storage' ? `${Number(breakdown[k])} GB` : k === 'network' ? `${Number(breakdown[k])} Mbps` : `${Number(breakdown[k])}`}</div>
               </div>
-              {cheapest ? <div className="provider-chip" aria-hidden><span className="dot" style={{background: accent[p]}} />Cheapest</div> : null}
-            </div>
+            ) : null
+          ))}
+        </div>
 
-            <div className="mt-3 flex items-end gap-4">
-              <div className="flex-1">
-                <div className="price-large">{currency ? new Intl.NumberFormat(undefined, {style:'currency', currency}).format(Number(total)) : String(total)}</div>
-                <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
-              </div>
-              <div className="text-right">
-                <button className="px-3 py-1 rounded bg-white/10 hover:bg-white/20">Details</button>
-              </div>
-            </div>
-
-            <div className="mt-4 flex gap-2 flex-wrap">
-              {['cpu','ram','storage','network'].map((k) => (
-                breakdown && breakdown[k] !== undefined ? (
-                  <div key={k} className="stat-chip">
-                    <div className="stat-key">{k.toUpperCase()}</div>
-                    <div className="stat-val">{k === 'ram' ? `${Number(breakdown[k])} GB` : k === 'storage' ? `${Number(breakdown[k])} GB` : k === 'network' ? `${Number(breakdown[k])} Mbps` : `${Number(breakdown[k])}`}</div>
-                  </div>
-                ) : null
+        <div className={`p-3 bg-gray-50 dark:bg-gray-800 overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96' : 'max-h-0'}`}>
+          {breakdown ? (
+            <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
+              {Object.entries(breakdown).map(([k, v]) => (
+                <li key={k} className="flex justify-between">
+                  <span className="capitalize">{k}</span>
+                  <span className="font-mono">{fmt(Number(v))}</span>
+                </li>
               ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            className="text-sm bg-white/10 hover:bg-white/20 px-3 py-1 rounded transition"
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-          >
-            {open ? "Hide" : "Details"}
-          </button>
+            </ul>
+          ) : (
+            <div className="text-sm text-gray-600 dark:text-gray-300">No details available</div>
+          )}
         </div>
       </div>
-      <div className={`p-4 bg-gray-50 dark:bg-gray-800 overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96' : 'max-h-0'}`}>
-        {breakdown ? (
-          <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-            {Object.entries(breakdown).map(([k, v]) => (
-              <li key={k} className="flex justify-between">
-                <span className="capitalize">{k}</span>
-                <span className="font-mono">{fmt(Number(v))}</span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="text-sm text-gray-600 dark:text-gray-300">No details available</div>
-        )}
-      </div>
-    </div>
     );
   } catch (err) {
     // Log and fail gracefully to avoid breaking other cards

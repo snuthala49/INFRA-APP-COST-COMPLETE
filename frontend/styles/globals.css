@@ -78,6 +78,14 @@ html, body, .page-root {
   --neon: rgba(124,58,237,0.18);
 }
 
+/* uCalc-inspired tokens */
+:root {
+  --ucalc-blue: #0b74de;
+  --ucalc-accent: #ff8c42;
+  --ucalc-plate: #f7fbff;
+  --ucalc-muted: #6b7280;
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -102,6 +110,17 @@ body::before {
 .card { position: relative; overflow: visible; }
 .card::before { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: 12px; }
 .card .provider-img { filter: drop-shadow(0 8px 28px rgba(99,102,241,0.14)); width: 40px; height: 40px; }
+
+/* Plan tile look (uCalc-like) */
+.plan-tile { border-radius: 12px; padding: 18px; background: linear-gradient(180deg, var(--ucalc-plate), #ffffff); border: 1px solid rgba(15,23,42,0.04); }
+.plan-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.plan-name { font-size: 0.9rem; font-weight: 700; color: var(--ucalc-muted); text-transform:uppercase; letter-spacing:0.04em; }
+.plan-badge { font-size: 0.72rem; padding:6px 10px; border-radius:9999px; background: linear-gradient(90deg, var(--ucalc-blue), #0aa0ff); color: white; box-shadow: 0 6px 18px rgba(11,116,222,0.12); }
+.price-large { font-size: 2.4rem; color: var(--ucalc-blue); }
+.price-sub { color: var(--ucalc-muted); font-size: 0.85rem; }
+
+.provider-chip { background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 9999px; font-size: 0.75rem; display: inline-flex; gap: 6px; align-items: center; }
+.provider-chip.cheapest { background: linear-gradient(90deg, rgba(11,116,222,0.12), rgba(255,140,66,0.06)); box-shadow: 0 6px 18px rgba(11,116,222,0.08); }
 
 /* stronger colored accent on the left edge */
 .card-accent-left::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
@@ -174,5 +193,14 @@ body::before {
 
 /* subtle separation for table area */
 .pricing-table tr:nth-child(odd) { background: transparent; }
+
+/* styled header row */
+.pricing-table thead tr { background: linear-gradient(90deg, rgba(11,116,222,0.06), rgba(0,0,0,0)); }
+.pricing-table thead th { font-weight: 700; color: var(--ucalc-muted); padding: 12px 8px; }
+.pricing-table tbody td { padding: 12px 8px; }
+
+/* Buy button look for table header */
+.table-buy { background: var(--ucalc-blue); color: white; padding: 6px 10px; border-radius: 6px; font-weight: 600; }
+
 
 
