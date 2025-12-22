@@ -1,7 +1,7 @@
 
 Infra Cost Calculator (Local)
 
-Backend: Flask (port 5001)
+Backend: Flask (port 5000)
 Frontend: Next.js + Tailwind (port 3000)
 
 Run backend first, then frontend.
@@ -25,7 +25,7 @@ python3 -m pip install -r requirements-dev.txt
 
 ```bash
 python3 app.py
-# or: FLASK_APP=app FLASK_ENV=development flask run --port=5001
+# or: FLASK_APP=app FLASK_ENV=development flask run --port=5000
 ```
 
 4. Run tests:
@@ -38,7 +38,7 @@ Notes:
 
 ## Frontend - Development & Local Testing 🖥️
 
-1. Configure the API URL (optional - defaults to http://127.0.0.1:5001):
+1. Configure the API URL (optional - defaults to http://127.0.0.1:5000):
 
 ```bash
 # Copy the example and edit if needed

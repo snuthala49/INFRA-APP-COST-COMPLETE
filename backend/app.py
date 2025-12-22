@@ -9,7 +9,6 @@ from cloud_providers.azure import azure_cost
 from cloud_providers.gcp import gcp_cost
 from cloud_providers.kubernetes import k8s_cost
 from utils.onprem_tco import calculate_onprem_tco
-from utils.price_sync_scheduler import start_scheduler, stop_scheduler
 from schemas import CalcPayload
 
 app = Flask(__name__)
@@ -17,12 +16,6 @@ app = Flask(__name__)
 CORS(app)
 
 logger = logging.getLogger(__name__)
-
-# Start the periodic price sync scheduler on app startup
-try:
-    start_scheduler(cron_hour=2, cron_minute=0)  # Daily at 2 AM UTC
-except Exception as e:
-    logger.warning(f"Could not start price sync scheduler: {e}")
 
 
 @app.route("/", methods=["GET"])
@@ -52,12 +45,5 @@ def calculate():
         return jsonify({"error": "internal server error"}), 500
 
 
-@app.teardown_appcontext
-def shutdown(exception=None):
-    """Gracefully shut down the scheduler on app termination."""
-    stop_scheduler()
-
-
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
-

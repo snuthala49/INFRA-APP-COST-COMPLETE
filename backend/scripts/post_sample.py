@@ -4,7 +4,7 @@ import requests
 import sys
 
 
-def main(url="http://127.0.0.1:5001/calculate"):
+def main(url="http://127.0.0.1:5000/calculate"):
     payload = {"cpu": 2, "ram": 8, "storage": 100, "network": 10, "backup": 50}
     try:
         r = requests.post(url, json=payload, timeout=5)

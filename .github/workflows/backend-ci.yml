@@ -59,9 +59,9 @@ jobs:
       - name: Start backend
         run: |
           cd backend
-          nohup python3 -m flask --app app --debug run --port=5001 > /tmp/backend.log 2>&1 &
+          nohup python3 -m flask --app app --debug run --port=5000 > /tmp/backend.log 2>&1 &
           for i in $(seq 1 30); do
-            if curl -sS http://127.0.0.1:5001/ >/dev/null 2>&1; then
+            if curl -sS http://127.0.0.1:5000/ >/dev/null 2>&1; then
               echo backend ready && break
             fi
             sleep 1

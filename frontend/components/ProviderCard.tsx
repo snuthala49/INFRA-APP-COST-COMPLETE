@@ -8,7 +8,6 @@ interface Props {
   breakdown?: { [k: string]: number };
   cheapest?: boolean;
   imageMode?: 'illustration' | 'photo';
-  selected_instance?: { sku?: string; family?: string; vcpu?: number; ram_gb?: number; count?: number; price_per_hour?: number; price_per_month?: number };
 }
 
 const colors: { [k: string]: string } = {
@@ -19,7 +18,7 @@ const colors: { [k: string]: string } = {
   onprem: "from-stone-200 to-stone-300 text-gray-900",
 };
 
-const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, imageMode = 'illustration', selected_instance }) => {
+const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, imageMode = 'illustration' }) => {
   const [open, setOpen] = useState(false);
   const fmt = (v: number) => {
     try {
@@ -84,9 +83,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             </div>
             <div>
               <div className="plan-name">{provider}</div>
-              <div className="price-sub">
-                {selected_instance && selected_instance.sku ? `${selected_instance.sku} × ${selected_instance.count || 1}` : 'per month • estimated'}
-              </div>
+              <div className="price-sub">per month • estimated</div>
             </div>
           </div>
           <div className="flex items-center gap-2">
