@@ -1,0 +1,11 @@
+[
+  {"sku": "t3.small", "family": "t3", "vcpu": 1, "ram_gb": 2, "price_per_hour": 0.0208},
+  {"sku": "t3.medium", "family": "t3", "vcpu": 1, "ram_gb": 4, "price_per_hour": 0.0416},
+  {"sku": "t3.large", "family": "t3", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.0832},
+  {"sku": "m5.large", "family": "m5", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.096},
+  {"sku": "m5.xlarge", "family": "m5", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.192},
+  {"sku": "m5.2xlarge", "family": "m5", "vcpu": 8, "ram_gb": 32, "price_per_hour": 0.384},
+  {"sku": "r5.large", "family": "r5", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
+  {"sku": "r5.xlarge", "family": "r5", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252},
+  {"sku": "r5.2xlarge", "family": "r5", "vcpu": 8, "ram_gb": 64, "price_per_hour": 0.504}
+]

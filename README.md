@@ -87,6 +87,55 @@ The E2E verifies Azure and GCP totals are displayed and non-zero using a headles
 
 ---
 
+## AWS MVP: instance-based pricing (new)
+
+This project includes an MVP for AWS instance-based pricing:
+
+- A compact instance catalog is available at `backend/data/aws_catalog.json` with representative SKUs and on-demand hourly prices (placeholders).
+- The backend implements a simple matcher (`backend/utils/aws_catalog.py`) that selects the nearest instance SKU for a CPU/RAM request and computes the monthly instance cost using SKU hourly price.
+- `backend/cloud_providers/aws.py` uses the matcher and returns `selected_instance` metadata in the `/calculate` response (fields: sku, count, price_per_hour, price_per_month).
+
+Notes & next steps:
+
+- The MVP uses a small in-repo catalog. For production-grade accuracy, we recommend adding a price-sync job that fetches real catalog data from AWS Pricing API and updates per-SKU `price_per_hour` values.
+- After AWS is working, the same approach can be applied to Azure and GCP.
+ 
+### Running the AWS price sync
+
+You can sync on-demand hourly prices from AWS using either the public EC2 offerings (no credentials required) or the AWS Pricing API.
+
+**Option 1: Public EC2 Offerings (Recommended — no credentials required)**
+
+```bash
+cd backend
+python -m utils.aws_price_sync --public --write-catalog
+```
+
+This downloads the public EC2 offerings JSON file (shared tenancy, Linux, on-demand pricing for the specified region) and extracts prices for your catalog SKUs. It writes a cache at `backend/cache/aws_prices.json` and with `--write-catalog` updates the `price_per_hour` values in `backend/data/aws_catalog.json`.
+
+**Option 2: AWS Pricing API (requires AWS credentials)**
+
+```bash
+cd backend
+python -m utils.aws_price_sync --write-catalog
+```
+
+This uses boto3 to query the AWS Pricing API (requires AWS credentials and IAM permissions for pricing:GetProducts). Results are cached and optionally written to the catalog.
+
+**Common options**
+
+- `--location`: Specify an AWS region (default: 'US East (N. Virginia)'). Examples:
+  - 'US East (N. Virginia)'
+  - 'US West (Oregon)'
+  - 'EU (Ireland)'
+  - etc.
+
+Example with custom location:
+
+```bash
+python -m utils.aws_price_sync --public --write-catalog --location "EU (Ireland)"
+```
+
 ## CI status
 
 The project runs unit tests and E2E tests on PRs via GitHub Actions. Add a status badge after you push the repo to GitHub (replace <OWNER> and <REPO>):

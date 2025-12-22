@@ -1,0 +1,8 @@
+[
+  {"sku": "n1-standard-2", "family": "n1-standard", "vcpu": 2, "ram_gb": 7.5, "price_per_hour": 0.095},
+  {"sku": "n1-standard-4", "family": "n1-standard", "vcpu": 4, "ram_gb": 15, "price_per_hour": 0.19},
+  {"sku": "n2-standard-2", "family": "n2-standard", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.1},
+  {"sku": "n2-standard-4", "family": "n2-standard", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.2},
+  {"sku": "n2-highmem-2", "family": "n2-highmem", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
+  {"sku": "n2-highmem-4", "family": "n2-highmem", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252}
+]

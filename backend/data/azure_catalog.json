@@ -1,0 +1,8 @@
+[
+  {"sku": "Standard_B2s", "family": "B-series", "vcpu": 2, "ram_gb": 4, "price_per_hour": 0.05},
+  {"sku": "Standard_B2ms", "family": "B-series", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.082},
+  {"sku": "Standard_D2s_v3", "family": "D-series", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.1},
+  {"sku": "Standard_D4s_v3", "family": "D-series", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.2},
+  {"sku": "Standard_E2s_v3", "family": "E-series", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
+  {"sku": "Standard_E4s_v3", "family": "E-series", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252}
+]

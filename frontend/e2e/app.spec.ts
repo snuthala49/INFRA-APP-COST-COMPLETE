@@ -43,12 +43,17 @@ test('calculate shows non-zero azure and gcp totals', async ({ page, baseURL }) 
   expect(numericFound).toBeGreaterThanOrEqual(2);
   expect(imagesFound).toBeGreaterThanOrEqual(2);
 
-  // Toggle to photo tiles and ensure photo backgrounds appear
-  await page.getByTestId('mode-toggle').click();
-  // Wait a moment for re-render
+  // Ensure we have exactly 5 provider cards rendered (one for each provider)
+  expect(count).toBe(5);
+
+  // Scroller arrows should exist and be interactive (right arrow scrolls to reveal more)
+  const rightBtn = page.getByLabel('Scroll right');
+  await expect(rightBtn).toBeVisible();
+  // Click right arrow and ensure the scroller moved by checking that card[2] is at least partially visible
+  await rightBtn.click();
   await page.waitForTimeout(300);
-  const photoImgs = page.locator('img.photo-bg-img');
-  expect(await photoImgs.count()).toBeGreaterThanOrEqual(1);
+  const thirdCard = page.locator('[data-testid^="card-"]').nth(2);
+  await expect(thirdCard).toBeVisible();
 
   // Check billing period selector exists and switch to annual
   await page.getByRole('button', { name: 'Annual' }).click();
@@ -71,4 +76,8 @@ test('calculate shows non-zero azure and gcp totals', async ({ page, baseURL }) 
   // cheapest could be different depending on data; just check some card has the .cheapest class
   const hasCheapest = await page.locator('.cheapest').count();
   expect(hasCheapest).toBeGreaterThan(0);
+
+  // AWS MVP: selected_instance should be displayed on the AWS card
+  const awsCard = page.locator('[data-testid="card-aws"]').first();
+  await expect(awsCard.locator('.text-xs', { hasText: 'Instance' })).toBeVisible({ timeout: 2000 });
 });

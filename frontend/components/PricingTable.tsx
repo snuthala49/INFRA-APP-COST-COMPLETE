@@ -1,11 +1,22 @@
 "use client";
 import React from 'react';
 
+interface SelectedInstance {
+  sku: string;
+  family?: string;
+  vcpu: number;
+  ram_gb: number;
+  count: number;
+  price_per_hour: number;
+  price_per_month: number;
+}
+
 interface Result {
   provider: string;
   total: number;
   currency?: string;
   breakdown?: { [k: string]: number };
+  selected_instance?: SelectedInstance;
 }
 
 interface Props { results: Result[]; multiplier?: number }
@@ -21,12 +32,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
             <tr className="text-left text-sm text-gray-500">
               <th className="pr-6">Feature</th>
               {results.map((r) => (
-                <th key={r.provider} className="pr-6">
-                  <div className="flex items-center justify-between gap-2">
-                    <span>{r.provider}</span>
-                    <button className="table-buy">Buy</button>
-                  </div>
-                </th>
+                <th key={r.provider} className="pr-6">{r.provider}</th>
               ))}
             </tr>
           </thead>
@@ -34,15 +40,29 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
             {rows.map((row) => (
               <tr key={row} className="border-t">
                 <td className="py-3 text-sm font-medium">{row}</td>
-                {results.map((r) => (
-                  <td key={r.provider + row} className="py-3 text-sm">
-                    {row === 'Monthly' ? (
-                      <span className="font-semibold">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
-                    ) : (
-                      <span className="text-gray-600">{r.breakdown && r.breakdown[row.toLowerCase()] !== undefined ? r.breakdown[row.toLowerCase()] : '-'}</span>
-                    )}
-                  </td>
-                ))}
+                {results.map((r) => {
+                  let cellValue: string | React.ReactNode = '-';
+                  
+                  if (row === 'Monthly') {
+                    cellValue = (
+                      <span className="font-semibold">
+                        {new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}
+                      </span>
+                    );
+                  } else if (row === 'CPU' && r.selected_instance) {
+                    cellValue = <span className="text-gray-600">{r.selected_instance.vcpu}</span>;
+                  } else if (row === 'RAM' && r.selected_instance) {
+                    cellValue = <span className="text-gray-600">{r.selected_instance.ram_gb} GB</span>;
+                  } else if (r.breakdown && r.breakdown[row.toLowerCase()] !== undefined) {
+                    cellValue = <span className="text-gray-600">${r.breakdown[row.toLowerCase()].toFixed(2)}</span>;
+                  }
+                  
+                  return (
+                    <td key={r.provider + row} className="py-3 text-sm">
+                      {cellValue}
+                    </td>
+                  );
+                })}
               </tr>
             ))}
           </tbody>

@@ -20,3 +20,8 @@ def test_calculate_endpoint_returns_expected_structure():
     assert data["gcp"]["total"] > 0
     assert data["kubernetes"]["total"] > 0
     assert data["onprem"].get("currency") == "USD"
+    # AWS selected instance exists for MVP
+    assert "selected_instance" in data["aws"]
+    si = data["aws"]["selected_instance"]
+    assert si.get("sku")
+    assert si.get("count") >= 1

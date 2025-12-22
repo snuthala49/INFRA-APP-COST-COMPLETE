@@ -51,14 +51,26 @@ body {
 
 /* polished input */
 .input-polished {
-  @apply border rounded px-3 py-2 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 focus:outline-none;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: #ffffff;
+  color: #111827;
 }
+.input-polished:focus { outline: 2px solid rgba(59,130,246,0.18); outline-offset: 2px; }
+.dark .input-polished { background: #1f2937; color: #e5e7eb; border-color: rgba(255,255,255,0.06); }
+.input-polished { box-shadow: inset 0 1px 0 rgba(255,255,255,0.03); }
 
 /* polished button */
 .btn-primary {
-  @apply bg-gradient-to-br from-indigo-600 to-cyan-500 text-white px-5 py-2 rounded shadow hover:opacity-95 focus:outline-none;
+  background: linear-gradient(90deg, #4f46e5, #06b6d4);
+  color: white;
+  padding: 0.5rem 1.25rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.06);
 }
+.btn-primary:hover { opacity: 0.95; }
+.btn-primary:focus { outline: 2px solid rgba(99,102,241,0.12); outline-offset: 2px; }
 
 /* Global page background & header */
 html, body, .page-root {
@@ -103,6 +115,10 @@ body::before {
   border-bottom: 1px solid rgba(99,102,241,0.06);
 }
 
+/* ensure title has correct color in light and dark modes */
+.site-title { color: #0f172a; }
+.dark .site-title { color: #ffffff; }
+
 .card { background-clip: padding-box; }
 
 /* Glassmorphism / neon accent for provider cards */
@@ -123,7 +139,7 @@ body::before {
 .provider-chip.cheapest { background: linear-gradient(90deg, rgba(11,116,222,0.12), rgba(255,140,66,0.06)); box-shadow: 0 6px 18px rgba(11,116,222,0.08); }
 
 /* stronger colored accent on the left edge */
-.card-accent-left::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
+.card-accent-left::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; background: var(--accent-color, linear-gradient(180deg, rgba(124,58,237,0.36), rgba(11,116,222,0.28))); }
 
 .price-large { font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; text-shadow: 0 2px 12px rgba(124,58,237,0.12); }
 
@@ -178,7 +194,6 @@ body::before {
 
 /* when photo mode is active, make card foreground slightly darker for readability */
 .card.photo-mode { background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(255,255,255,0.9)); }
-}
 
 /* pricing layout helpers */
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -190,6 +205,17 @@ body::before {
 .plan-feature { color: var(--muted); font-size: 0.92rem; }
 
 .min-w-[280px] { min-width: 280px; }
+
+/* scroll snap helpers for horizontal scroller */
+.scroll-snap-x { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+.scroll-snap-align-start { scroll-snap-align: start; }
+
+/* focus styles for cards to improve accessibility */
+.plan-tile:focus { outline: 3px solid rgba(99,102,241,0.18); outline-offset: 4px; }
+
+/* small styling for the scroller arrow buttons */
+.scroller-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; width: 36px; height: 36px; }
+
 
 /* subtle separation for table area */
 .pricing-table tr:nth-child(odd) { background: transparent; }

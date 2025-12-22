@@ -1,30 +1,47 @@
 
+from utils.azure_catalog import find_best_fit, price_month_from_hour
+
+
 def azure_cost(cpu=0, ram=0, storage=0, network=0, backup=0, **_):
-    """Simple Azure pricing model (illustrative).
+    """Azure pricing model with instance selector.
 
-    Uses different rates than AWS for demonstration and returns a structured dict.
+    This implementation chooses a best-fit instance SKU from the Azure catalog and
+    computes pricing using the SKU's hourly price (monthlyized). Storage/network/backup
+    are charged with realistic per-unit rates.
     """
-    cpu_rate = 9.0       # $ per vCPU / month
-    ram_rate = 3.8       # $ per GB / month
-    storage_rate = 0.025 # $ per GB / month
-    network_rate = 0.045 # $ per Mbps / month
-    backup_rate = 0.012  # $ per GB / month
+    # Azure realistic rates (per month per unit)
+    storage_rate = 0.12  # $ per GB / month (managed disk)
+    network_rate = 0.02  # $ per GB / month (data transfer)
+    backup_rate = 0.05   # $ per GB / month (backup snapshots)
 
-    cpu_cost = cpu * cpu_rate
-    ram_cost = ram * ram_rate
+    # choose instance SKU and count
+    selected = find_best_fit(cpu, ram)
+    sku_hourly = float(selected.get('price_per_hour', 0.0))
+    count = int(selected.get('count', 1))
+
+    instance_month = price_month_from_hour(sku_hourly, count)
+
     storage_cost = storage * storage_rate
     network_cost = network * network_rate
     backup_cost = backup * backup_rate
 
-    total = cpu_cost + ram_cost + storage_cost + network_cost + backup_cost
+    total = instance_month + storage_cost + network_cost + backup_cost
 
     return {
         "provider": "azure",
         "total": round(total, 2),
         "currency": "USD",
+        "selected_instance": {
+            "sku": selected.get('sku'),
+            "family": selected.get('family'),
+            "vcpu": selected.get('vcpu'),
+            "ram_gb": selected.get('ram_gb'),
+            "count": count,
+            "price_per_hour": sku_hourly,
+            "price_per_month": round(instance_month, 4),
+        },
         "breakdown": {
-            "cpu": round(cpu_cost, 2),
-            "ram": round(ram_cost, 2),
+            "instance": round(instance_month, 2),
             "storage": round(storage_cost, 2),
             "network": round(network_cost, 2),
             "backup": round(backup_cost, 2),

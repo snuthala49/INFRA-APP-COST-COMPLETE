@@ -14,4 +14,5 @@ def test_aws_cost_positive_and_structure():
     assert r["provider"] == "aws"
     assert "total" in r and isinstance(r["total"], (int, float))
     assert r["total"] >= 0
-    assert math.isclose(r["breakdown"]["cpu"] + r["breakdown"]["ram"] + r["breakdown"]["storage"] + r["breakdown"]["network"] + r["breakdown"]["backup"], r["total"], rel_tol=1e-6)
+    assert math.isclose(r["breakdown"]["instance"] + r["breakdown"]["storage"] + r["breakdown"]["network"] + r["breakdown"]["backup"], r["total"], rel_tol=1e-6)
+
