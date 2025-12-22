@@ -2,13 +2,13 @@
 import React from 'react';
 
 interface SelectedInstance {
-  sku: string;
+  sku?: string;
   family?: string;
-  vcpu: number;
-  ram_gb: number;
-  count: number;
-  price_per_hour: number;
-  price_per_month: number;
+  vcpu?: number;
+  ram_gb?: number;
+  count?: number;
+  price_per_hour?: number;
+  price_per_month?: number;
 }
 
 interface Result {

@@ -12,7 +12,8 @@ interface CostResult {
   note?: string;
   currency?: string;
   breakdown?: { [k: string]: number };
-  selected_instance?: { sku?: string; count?: number; price_per_hour?: number; price_per_month?: number };
+  selected_instance?: { sku?: string; family?: string; vcpu?: number; ram_gb?: number; count?: number; price_per_hour?: number; price_per_month?: number };
+  cheapest?: boolean;
 }
 
 export default function Home() {

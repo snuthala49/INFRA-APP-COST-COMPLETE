@@ -5,9 +5,11 @@ interface InputFieldProps {
   label: string;
   value: number;
   onChange: (val: number) => void;
+  min?: number;
+  max?: number;
 }
 
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
+const InputField: React.FC<InputFieldProps> = ({ label, value, onChange, min, max }) => {
   const id = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
   return (
     <div className="flex flex-col mb-2">
@@ -18,6 +20,8 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
           className="input-polished w-full"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
+          min={min}
+          max={max}
         />
     </div>
   );
