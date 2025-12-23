@@ -1,0 +1,152 @@
+{
+  "instances": [
+    {
+      "instance_type": "t3.micro",
+      "vcpu": 2,
+      "memory_gb": 1,
+      "price_per_hour": 0.0104,
+      "price_per_month": 7.59,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "t3.small",
+      "vcpu": 2,
+      "memory_gb": 2,
+      "price_per_hour": 0.0208,
+      "price_per_month": 15.18,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "t3.medium",
+      "vcpu": 2,
+      "memory_gb": 4,
+      "price_per_hour": 0.0416,
+      "price_per_month": 30.37,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "t3.large",
+      "vcpu": 2,
+      "memory_gb": 8,
+      "price_per_hour": 0.0832,
+      "price_per_month": 60.74,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "t3.xlarge",
+      "vcpu": 4,
+      "memory_gb": 16,
+      "price_per_hour": 0.1664,
+      "price_per_month": 121.47,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "t3.2xlarge",
+      "vcpu": 8,
+      "memory_gb": 32,
+      "price_per_hour": 0.3328,
+      "price_per_month": 242.94,
+      "category": "general",
+      "description": "Burstable performance"
+    },
+    {
+      "instance_type": "m5.large",
+      "vcpu": 2,
+      "memory_gb": 8,
+      "price_per_hour": 0.096,
+      "price_per_month": 70.08,
+      "category": "general",
+      "description": "General purpose, balanced compute"
+    },
+    {
+      "instance_type": "m5.xlarge",
+      "vcpu": 4,
+      "memory_gb": 16,
+      "price_per_hour": 0.192,
+      "price_per_month": 140.16,
+      "category": "general",
+      "description": "General purpose, balanced compute"
+    },
+    {
+      "instance_type": "m5.2xlarge",
+      "vcpu": 8,
+      "memory_gb": 32,
+      "price_per_hour": 0.384,
+      "price_per_month": 280.32,
+      "category": "general",
+      "description": "General purpose, balanced compute"
+    },
+    {
+      "instance_type": "m5.4xlarge",
+      "vcpu": 16,
+      "memory_gb": 64,
+      "price_per_hour": 0.768,
+      "price_per_month": 560.64,
+      "category": "general",
+      "description": "General purpose, balanced compute"
+    },
+    {
+      "instance_type": "c5.large",
+      "vcpu": 2,
+      "memory_gb": 4,
+      "price_per_hour": 0.085,
+      "price_per_month": 62.05,
+      "category": "compute",
+      "description": "Compute optimized"
+    },
+    {
+      "instance_type": "c5.xlarge",
+      "vcpu": 4,
+      "memory_gb": 8,
+      "price_per_hour": 0.17,
+      "price_per_month": 124.10,
+      "category": "compute",
+      "description": "Compute optimized"
+    },
+    {
+      "instance_type": "r5.large",
+      "vcpu": 2,
+      "memory_gb": 16,
+      "price_per_hour": 0.126,
+      "price_per_month": 91.98,
+      "category": "memory",
+      "description": "Memory optimized"
+    },
+    {
+      "instance_type": "r5.xlarge",
+      "vcpu": 4,
+      "memory_gb": 32,
+      "price_per_hour": 0.252,
+      "price_per_month": 183.96,
+      "category": "memory",
+      "description": "Memory optimized"
+    }
+  ],
+  "storage_pricing": {
+    "ebs_gp3": {
+      "price_per_gb_month": 0.08,
+      "description": "General Purpose SSD (gp3)"
+    },
+    "ebs_gp2": {
+      "price_per_gb_month": 0.10,
+      "description": "General Purpose SSD (gp2)"
+    }
+  },
+  "network_pricing": {
+    "data_transfer_out": {
+      "first_10tb_per_gb": 0.09,
+      "description": "Data transfer out to internet"
+    }
+  },
+  "backup_pricing": {
+    "s3_standard": {
+      "price_per_gb_month": 0.023,
+      "description": "S3 Standard storage for backups"
+    }
+  }
+}

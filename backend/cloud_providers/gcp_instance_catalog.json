@@ -1,0 +1,161 @@
+{
+  "instances": [
+    {
+      "instance_type": "e2-micro",
+      "vcpu": 2,
+      "memory_gb": 1,
+      "price_per_hour": 0.0084,
+      "price_per_month": 6.13,
+      "category": "general",
+      "description": "Shared-core, cost-effective"
+    },
+    {
+      "instance_type": "e2-small",
+      "vcpu": 2,
+      "memory_gb": 2,
+      "price_per_hour": 0.0168,
+      "price_per_month": 12.26,
+      "category": "general",
+      "description": "Shared-core, small workloads"
+    },
+    {
+      "instance_type": "e2-medium",
+      "vcpu": 2,
+      "memory_gb": 4,
+      "price_per_hour": 0.0335,
+      "price_per_month": 24.46,
+      "category": "general",
+      "description": "Shared-core, balanced"
+    },
+    {
+      "instance_type": "n1-standard-2",
+      "vcpu": 2,
+      "memory_gb": 7.5,
+      "price_per_hour": 0.095,
+      "price_per_month": 69.35,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "n1-standard-4",
+      "vcpu": 4,
+      "memory_gb": 15,
+      "price_per_hour": 0.19,
+      "price_per_month": 138.7,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "n1-standard-8",
+      "vcpu": 8,
+      "memory_gb": 30,
+      "price_per_hour": 0.38,
+      "price_per_month": 277.4,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "n1-standard-16",
+      "vcpu": 16,
+      "memory_gb": 60,
+      "price_per_hour": 0.76,
+      "price_per_month": 554.8,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "n2-standard-2",
+      "vcpu": 2,
+      "memory_gb": 8,
+      "price_per_hour": 0.0971,
+      "price_per_month": 70.88,
+      "category": "general",
+      "description": "2nd gen, general purpose"
+    },
+    {
+      "instance_type": "n2-standard-4",
+      "vcpu": 4,
+      "memory_gb": 16,
+      "price_per_hour": 0.1942,
+      "price_per_month": 141.77,
+      "category": "general",
+      "description": "2nd gen, general purpose"
+    },
+    {
+      "instance_type": "n2-standard-8",
+      "vcpu": 8,
+      "memory_gb": 32,
+      "price_per_hour": 0.3884,
+      "price_per_month": 283.53,
+      "category": "general",
+      "description": "2nd gen, general purpose"
+    },
+    {
+      "instance_type": "c2-standard-4",
+      "vcpu": 4,
+      "memory_gb": 16,
+      "price_per_hour": 0.2088,
+      "price_per_month": 152.42,
+      "category": "compute",
+      "description": "Compute-optimized"
+    },
+    {
+      "instance_type": "c2-standard-8",
+      "vcpu": 8,
+      "memory_gb": 32,
+      "price_per_hour": 0.4176,
+      "price_per_month": 304.85,
+      "category": "compute",
+      "description": "Compute-optimized"
+    },
+    {
+      "instance_type": "n2-highmem-2",
+      "vcpu": 2,
+      "memory_gb": 16,
+      "price_per_hour": 0.1307,
+      "price_per_month": 95.41,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "n2-highmem-4",
+      "vcpu": 4,
+      "memory_gb": 32,
+      "price_per_hour": 0.2614,
+      "price_per_month": 190.82,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "n2-highmem-8",
+      "vcpu": 8,
+      "memory_gb": 64,
+      "price_per_hour": 0.5228,
+      "price_per_month": 381.64,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "n2-highmem-16",
+      "vcpu": 16,
+      "memory_gb": 128,
+      "price_per_hour": 1.0456,
+      "price_per_month": 763.29,
+      "category": "memory",
+      "description": "Memory-optimized"
+    }
+  ],
+  "storage_pricing": {
+    "pd_standard_per_gb_month": 0.04,
+    "pd_balanced_per_gb_month": 0.10,
+    "pd_ssd_per_gb_month": 0.17
+  },
+  "network_pricing": {
+    "egress_per_gb": 0.085
+  },
+  "backup_pricing": {
+    "standard_per_gb_month": 0.026,
+    "nearline_per_gb_month": 0.01,
+    "coldline_per_gb_month": 0.004
+  }
+}

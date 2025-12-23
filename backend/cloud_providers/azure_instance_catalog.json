@@ -1,0 +1,142 @@
+{
+  "instances": [
+    {
+      "instance_type": "Standard_B1s",
+      "vcpu": 1,
+      "memory_gb": 1,
+      "price_per_hour": 0.0104,
+      "price_per_month": 7.59,
+      "category": "burstable",
+      "description": "Burstable, cost-effective"
+    },
+    {
+      "instance_type": "Standard_B2s",
+      "vcpu": 2,
+      "memory_gb": 4,
+      "price_per_hour": 0.0416,
+      "price_per_month": 30.37,
+      "category": "burstable",
+      "description": "Burstable, small workloads"
+    },
+    {
+      "instance_type": "Standard_D2s_v3",
+      "vcpu": 2,
+      "memory_gb": 8,
+      "price_per_hour": 0.096,
+      "price_per_month": 70.08,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "Standard_D4s_v3",
+      "vcpu": 4,
+      "memory_gb": 16,
+      "price_per_hour": 0.192,
+      "price_per_month": 140.16,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "Standard_D8s_v3",
+      "vcpu": 8,
+      "memory_gb": 32,
+      "price_per_hour": 0.384,
+      "price_per_month": 280.32,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "Standard_D16s_v3",
+      "vcpu": 16,
+      "memory_gb": 64,
+      "price_per_hour": 0.768,
+      "price_per_month": 560.64,
+      "category": "general",
+      "description": "General purpose, balanced"
+    },
+    {
+      "instance_type": "Standard_F2s_v2",
+      "vcpu": 2,
+      "memory_gb": 4,
+      "price_per_hour": 0.085,
+      "price_per_month": 62.05,
+      "category": "compute",
+      "description": "Compute-optimized"
+    },
+    {
+      "instance_type": "Standard_F4s_v2",
+      "vcpu": 4,
+      "memory_gb": 8,
+      "price_per_hour": 0.169,
+      "price_per_month": 123.37,
+      "category": "compute",
+      "description": "Compute-optimized"
+    },
+    {
+      "instance_type": "Standard_F8s_v2",
+      "vcpu": 8,
+      "memory_gb": 16,
+      "price_per_hour": 0.338,
+      "price_per_month": 246.74,
+      "category": "compute",
+      "description": "Compute-optimized"
+    },
+    {
+      "instance_type": "Standard_E2s_v3",
+      "vcpu": 2,
+      "memory_gb": 16,
+      "price_per_hour": 0.126,
+      "price_per_month": 91.98,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "Standard_E4s_v3",
+      "vcpu": 4,
+      "memory_gb": 32,
+      "price_per_hour": 0.252,
+      "price_per_month": 183.96,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "Standard_E8s_v3",
+      "vcpu": 8,
+      "memory_gb": 64,
+      "price_per_hour": 0.504,
+      "price_per_month": 367.92,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "Standard_E16s_v3",
+      "vcpu": 16,
+      "memory_gb": 128,
+      "price_per_hour": 1.008,
+      "price_per_month": 735.84,
+      "category": "memory",
+      "description": "Memory-optimized"
+    },
+    {
+      "instance_type": "Standard_D2as_v4",
+      "vcpu": 2,
+      "memory_gb": 8,
+      "price_per_hour": 0.077,
+      "price_per_month": 56.21,
+      "category": "general",
+      "description": "AMD-based, cost-effective"
+    }
+  ],
+  "storage_pricing": {
+    "premium_ssd_per_gb_month": 0.135,
+    "standard_ssd_per_gb_month": 0.075,
+    "standard_hdd_per_gb_month": 0.045
+  },
+  "network_pricing": {
+    "outbound_per_gb": 0.087
+  },
+  "backup_pricing": {
+    "lrs_per_gb_month": 0.02,
+    "grs_per_gb_month": 0.04
+  }
+}

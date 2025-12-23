@@ -116,7 +116,7 @@ body::before {
 }
 
 /* ensure title has correct color in light and dark modes */
-.site-title { color: #0f172a; }
+.site-title { color: #f3f4f6; font-weight: 700; }
 .dark .site-title { color: #ffffff; }
 
 .card { background-clip: padding-box; }
@@ -173,7 +173,7 @@ body::before {
   justify-content: space-between;
   gap: 16px;
 }
-.site-title { font-weight: 700; font-size: 1.5rem; letter-spacing: -0.02em; }
+.site-title { font-size: 1.5rem; letter-spacing: -0.02em; }
 .site-sub { color: var(--muted); font-size: 0.92rem; }
 
 /* Price emphasis in cards */
@@ -198,6 +198,20 @@ body::before {
 /* pricing layout helpers */
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Ensure overflow scroll containers also hide scrollbar */
+.overflow-x-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.overflow-x-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll behavior */
+.scroll-smooth {
+  scroll-behavior: smooth;
+}
 
 .pricing-table th, .pricing-table td { padding-right: 1rem; padding-left: 0.25rem; }
 .pricing-table tr td { vertical-align: middle; }

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import InputField from "../components/InputField";
-import DarkModeToggle from "../components/DarkModeToggle";
 import ProviderCard from "../components/ProviderCard";
 import OptionsPanel from "../components/OptionsPanel";
 import PricingTable from "../components/PricingTable";
@@ -12,6 +11,13 @@ interface CostResult {
   note?: string;
   currency?: string;
   breakdown?: { [k: string]: number };
+  selected_instance?: {
+    type: string;
+    vcpu: number;
+    memory_gb: number;
+    category?: string;
+    description?: string;
+  };
 }
 
 export default function Home() {
@@ -23,8 +29,20 @@ export default function Home() {
 
   const [results, setResults] = useState<CostResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [tileMode, setTileMode] = useState<'illustration' | 'photo'>('illustration');
-  const [period, setPeriod] = useState<'monthly'|'6mo'|'annual'>('monthly');
+  const [period, setPeriod] = useState<'monthly'|'annual'>('monthly');
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+    }
+  };
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
 
@@ -54,7 +72,7 @@ export default function Home() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 page-root">
+    <div className="max-w-6xl mx-auto p-6 page-root">
       <div className="site-header mb-6">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-lg">
@@ -65,68 +83,79 @@ export default function Home() {
             <div className="site-sub">Compare cloud, Kubernetes and on-prem costs instantly</div>
           </div>
         </div>
-        <div className="flex items-center gap-4">
-          <DarkModeToggle />
-          <div className="flex items-center gap-2">
-            <button data-testid="mode-toggle" onClick={() => setTileMode(tileMode === 'illustration' ? 'photo' : 'illustration')} className="px-3 py-1 rounded bg-white/8 hover:bg-white/12">{tileMode === 'illustration' ? 'Photo tiles' : 'Illustration tiles'}</button>
-            <div className="infra-illustration" aria-hidden>
-              <img src="/assets/infra-illustration.svg" alt="infrastructure illustration" className="w-full h-full object-contain" />
-            </div>
-          </div>
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
-          <OptionsPanel cpu={cpu} ram={ram} storage={storage} network={network} backup={backup} setCpu={setCpu} setRam={setRam} setStorage={setStorage} setNetwork={setNetwork} setBackup={setBackup} period={period} setPeriod={(p) => setPeriod(p as any)} onCalculate={handleCalculate} loading={loading} />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <OptionsPanel cpu={cpu} ram={ram} storage={storage} network={network} backup={backup} setCpu={setCpu} setRam={setRam} setStorage={setStorage} setNetwork={setNetwork} setBackup={setBackup} period={period} setPeriod={setPeriod} onCalculate={handleCalculate} loading={loading} />
         </div>
 
-        <div className="md:col-span-2">
-          {results.length > 0 ? (
+        <div className="lg:col-span-3">{results.length > 0 ? (
             <>
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <div className="text-sm text-gray-500">Cheapest option</div>
-                  <div className="text-lg font-semibold">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total)}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Cheapest option</div>
+                  <div className="text-lg font-semibold text-gray-900 dark:text-white">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total)}</div>
                 </div>
                 <div className="text-sm text-gray-400">Comparisons: {results.length}</div>
               </div>
 
-              <div className="flex gap-4 overflow-x-auto hide-scrollbar py-2">
-                {results.map((r, idx) => (
-                  <div key={idx} className="min-w-[280px]">
-                    <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} imageMode={tileMode} />
-                  </div>
-                ))}
-              </div>
+              <PricingTable results={results} multiplier={period === 'monthly' ? 1 : 0.85} />
 
-              <PricingTable results={results} multiplier={period === 'monthly' ? 1 : period === '6mo' ? 0.9 : 0.8} />
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Provider Details</h3>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={scrollLeft}
+                      className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110 text-gray-700 dark:text-gray-300"
+                      aria-label="Scroll left"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    <button 
+                      onClick={scrollRight}
+                      className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 shadow-md hover:shadow-lg flex items-center justify-center transition-all hover:scale-110 text-gray-700 dark:text-gray-300"
+                      aria-label="Scroll right"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div 
+                    ref={scrollContainerRef}
+                    className="flex gap-3 overflow-x-auto py-2 px-1 scroll-smooth"
+                    style={{
+                      scrollbarWidth: 'none',
+                      msOverflowStyle: 'none',
+                      WebkitOverflowScrolling: 'touch'
+                    }}
+                  >
+                    {results.map((r, idx) => (
+                      <div key={idx} className="flex-shrink-0 w-[260px] sm:w-[280px]">
+                        <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} selected_instance={r.selected_instance} />
+                      </div>
+                    ))}
+                  </div>
+                  {/* Gradient hints for overflow */}
+                  <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-gray-50 dark:from-gray-900 to-transparent opacity-75"></div>
+                  <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-gray-50 dark:from-gray-900 to-transparent opacity-75"></div>
+                </div>
+                <div className="text-center mt-3 text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  ← Swipe or use arrows to see all {results.length} providers →
+                </div>
+              </div>
             </>
           ) : (
-            <div className="text-sm text-gray-500">No results yet — enter values and press Calculate</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">No results yet — enter values and press Calculate</div>
           )}
         </div>
       </div>
-
-      {results.length > 0 && (
-        <div className="mt-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <div className="text-sm text-gray-500">Cheapest option</div>
-                <div className="text-lg font-semibold">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total)}</div>
-            </div>
-            <div className="text-sm text-gray-400">Comparisons: {results.length}</div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {results.map((r, idx) => (
-              <div key={idx}>
-                <ProviderCard provider={r.provider} total={r.total} currency={r.currency} breakdown={r.breakdown} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

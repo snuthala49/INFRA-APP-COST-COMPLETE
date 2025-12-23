@@ -13,8 +13,8 @@ interface Props {
   setStorage: (n: number) => void;
   setNetwork: (n: number) => void;
   setBackup: (n: number) => void;
-  period: string;
-  setPeriod: (p: string) => void;
+  period: 'monthly' | 'annual';
+  setPeriod: (p: 'monthly' | 'annual') => void;
   onCalculate: () => void;
   loading: boolean;
 }
@@ -32,11 +32,28 @@ const OptionsPanel: React.FC<Props> = ({ cpu, ram, storage, network, backup, set
       </div>
 
       <div className="mt-4">
-        <div className="text-sm text-gray-500 mb-2">Billing period</div>
+        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Billing period</div>
         <div className="flex gap-2">
-          <button onClick={() => setPeriod('monthly')} className={`px-3 py-1 rounded ${period === 'monthly' ? 'bg-indigo-600 text-white' : 'bg-white/6'}`}>Monthly</button>
-          <button onClick={() => setPeriod('6mo')} className={`px-3 py-1 rounded ${period === '6mo' ? 'bg-indigo-600 text-white' : 'bg-white/6'}`}>6 months</button>
-          <button onClick={() => setPeriod('annual')} className={`px-3 py-1 rounded ${period === 'annual' ? 'bg-indigo-600 text-white' : 'bg-white/6'}`}>Annual</button>
+          <button 
+            onClick={() => setPeriod('monthly')} 
+            className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+              period === 'monthly' 
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            Monthly
+          </button>
+          <button 
+            onClick={() => setPeriod('annual')} 
+            className={`flex-1 px-3 py-2 rounded text-sm font-medium transition-colors ${
+              period === 'annual' 
+                ? 'bg-indigo-600 text-white' 
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            Annual <span className="text-xs opacity-75">(15% off)</span>
+          </button>
         </div>
       </div>
 

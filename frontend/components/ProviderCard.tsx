@@ -7,7 +7,13 @@ interface Props {
   currency?: string;
   breakdown?: { [k: string]: number };
   cheapest?: boolean;
-  imageMode?: 'illustration' | 'photo';
+  selected_instance?: {
+    type: string;
+    vcpu: number;
+    memory_gb: number;
+    category?: string;
+    description?: string;
+  };
 }
 
 const colors: { [k: string]: string } = {
@@ -18,7 +24,7 @@ const colors: { [k: string]: string } = {
   onprem: "from-stone-200 to-stone-300 text-gray-900",
 };
 
-const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, imageMode = 'illustration' }) => {
+const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, selected_instance }) => {
   const [open, setOpen] = useState(false);
   const fmt = (v: number) => {
     try {
@@ -72,7 +78,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
 
   try {
     return (
-      <div data-testid={`card-${p}`} className={`plan-tile ${imageMode === 'photo' ? 'photo-mode' : ''} ${cheapest ? 'cheapest pulse' : ''} card-accent-left`} style={{boxShadow: '0 6px 28px rgba(2,6,23,0.06)'}}>
+      <div data-testid={`card-${p}`} className={`plan-tile ${cheapest ? 'cheapest pulse' : ''} card-accent-left`} style={{boxShadow: '0 6px 28px rgba(2,6,23,0.06)'}}>
         <div className="plan-header">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-md bg-white/10 flex items-center justify-center">
@@ -83,12 +89,23 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             </div>
             <div>
               <div className="plan-name">{provider}</div>
-              <div className="price-sub">per month • estimated</div>
+              {selected_instance ? (
+                <div className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                  {selected_instance.type} • {selected_instance.vcpu} vCPU • {selected_instance.memory_gb} GB RAM
+                </div>
+              ) : (
+                <div className="price-sub">per month • estimated</div>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {cheapest ? <div className="provider-chip cheapest" aria-hidden><span className="dot" style={{background: accent[p]}} />Cheapest</div> : null}
-            <button className="text-sm bg-white/8 hover:bg-white/12 px-3 py-1 rounded">Details</button>
+            {cheapest && p !== 'onprem' ? <div className="provider-chip cheapest" aria-hidden><span className="dot" style={{background: accent[p]}} />Cheapest</div> : null}
+            <button 
+              onClick={() => setOpen(!open)} 
+              className="text-sm bg-white/8 hover:bg-white/12 px-3 py-1 rounded transition-colors"
+            >
+              {open ? 'Hide' : 'Details'}
+            </button>
           </div>
         </div>
 
@@ -97,18 +114,8 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             <div className="price-large">{currency ? new Intl.NumberFormat(undefined, {style:'currency', currency}).format(Number(total)) : String(total)}</div>
             <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
           </div>
-          <div className="w-20 h-20 rounded-md overflow-hidden relative">
-            {imageMode === 'photo' ? (
-              <img
-                src={`/assets/photos/photo_${p}.jpg`}
-                alt=""
-                aria-hidden
-                className="photo-bg-img absolute inset-0 w-full h-full object-cover rounded-md opacity-90"
-                onError={(e) => { (e.target as HTMLImageElement).src = `/assets/photo_${p}.svg`; }}
-              />
-            ) : (
-              <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain" />
-            )}
+          <div className="w-20 h-20 rounded-md overflow-hidden relative flex items-center justify-center">
+            <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain" />
           </div>
         </div>
 

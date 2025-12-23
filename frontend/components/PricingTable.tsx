@@ -21,11 +21,8 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
             <tr className="text-left text-sm text-gray-500">
               <th className="pr-6">Feature</th>
               {results.map((r) => (
-                <th key={r.provider} className="pr-6">
-                  <div className="flex items-center justify-between gap-2">
-                    <span>{r.provider}</span>
-                    <button className="table-buy">Buy</button>
-                  </div>
+                <th key={r.provider} className="pr-6 font-semibold text-gray-700 dark:text-gray-300">
+                  {r.provider}
                 </th>
               ))}
             </tr>
