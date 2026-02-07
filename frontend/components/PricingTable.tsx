@@ -6,12 +6,27 @@ interface Result {
   total: number;
   currency?: string;
   breakdown?: { [k: string]: number };
+  selected_instance?: {
+    vcpu: number;
+    memory_gb: number;
+  };
 }
 
 interface Props { results: Result[]; multiplier?: number }
 
 const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
   const rows = ['CPU','RAM','Storage','Network','Backup','Monthly'];
+  const getRowValue = (row: string, r: Result) => {
+    if (row === 'CPU') {
+      return r.selected_instance?.vcpu ?? r.breakdown?.cpu;
+    }
+    if (row === 'RAM') {
+      return r.selected_instance?.memory_gb ?? r.breakdown?.ram;
+    }
+    const key = row.toLowerCase();
+    return r.breakdown?.[key];
+  };
+
   return (
     <div className="card p-4 mt-6">
       <h4 className="text-sm text-gray-600 mb-3">Comparison</h4>
@@ -36,7 +51,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
                     {row === 'Monthly' ? (
                       <span className="font-semibold">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
                     ) : (
-                      <span className="text-gray-600">{r.breakdown && r.breakdown[row.toLowerCase()] !== undefined ? r.breakdown[row.toLowerCase()] : '-'}</span>
+                      <span className="text-gray-600">{getRowValue(row, r) !== undefined ? getRowValue(row, r) : '-'}</span>
                     )}
                   </td>
                 ))}
