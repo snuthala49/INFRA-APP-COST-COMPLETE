@@ -139,7 +139,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
           })}
         </div>
 
-        <div className={`p-3 bg-gray-50 dark:bg-gray-800 overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96' : 'max-h-0'}`}>
+        <div className={`overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96 p-3 bg-gray-50 dark:bg-gray-800' : 'max-h-0 p-0 bg-transparent'}`}>
           {breakdown ? (
             <div className="space-y-2">
               <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
@@ -161,11 +161,6 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
           )}
         </div>
 
-        {assumptions ? (
-          <div className="mt-3 text-[11px] leading-snug text-gray-500 dark:text-gray-400 italic">
-            {assumptions}
-          </div>
-        ) : null}
       </div>
     );
   } catch (err) {

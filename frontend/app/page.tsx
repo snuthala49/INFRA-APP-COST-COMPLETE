@@ -130,7 +130,7 @@ export default function Home() {
                 <div className="relative">
                   <div 
                     ref={scrollContainerRef}
-                    className="flex gap-3 overflow-x-auto py-2 px-1 scroll-smooth"
+                    className="flex gap-3 overflow-x-auto py-2 px-1 scroll-smooth snap-x snap-mandatory"
                     style={{
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none',
@@ -138,7 +138,7 @@ export default function Home() {
                     }}
                   >
                     {results.map((r, idx) => (
-                      <div key={idx} className="flex-shrink-0 w-[260px] sm:w-[280px]">
+                      <div key={idx} className="flex-shrink-0 basis-full sm:basis-1/2 snap-start">
                         <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} assumptions={r.assumptions} selected_instance={r.selected_instance} />
                       </div>
                     ))}
