@@ -10,18 +10,28 @@ interface Result {
     vcpu: number;
     memory_gb: number;
   };
+  assumptions?: string;
 }
 
 interface Props { results: Result[]; multiplier?: number }
 
 const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
-  const rows = ['CPU','RAM','Storage','Network','Backup','Monthly'];
+  const rows = ['CPU','RAM','Storage','Network','Backup','Monthly','Assumptions'];
   const getRowValue = (row: string, r: Result) => {
     if (row === 'CPU') {
-      return r.selected_instance?.vcpu ?? r.breakdown?.cpu;
+      return r.breakdown?.compute ?? r.breakdown?.cpu;
     }
     if (row === 'RAM') {
-      return r.selected_instance?.memory_gb ?? r.breakdown?.ram;
+      return r.breakdown?.compute ?? r.breakdown?.ram;
+    }
+    if (row === 'Storage') {
+      return r.breakdown?.storage;
+    }
+    if (row === 'Network') {
+      return r.breakdown?.network;
+    }
+    if (row === 'Backup') {
+      return r.breakdown?.backup;
     }
     const key = row.toLowerCase();
     return r.breakdown?.[key];
@@ -50,8 +60,10 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
                   <td key={r.provider + row} className="py-3 text-sm">
                     {row === 'Monthly' ? (
                       <span className="font-semibold">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
+                    ) : row === 'Assumptions' ? (
+                      <span className="text-gray-500 text-xs leading-snug">{r.assumptions || '-'}</span>
                     ) : (
-                      <span className="text-gray-600">{getRowValue(row, r) !== undefined ? getRowValue(row, r) : '-'}</span>
+                      <span className="text-gray-600">{getRowValue(row, r) !== undefined ? new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(Number(getRowValue(row, r))) : '-'}</span>
                     )}
                   </td>
                 ))}

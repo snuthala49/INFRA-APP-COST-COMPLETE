@@ -30,7 +30,7 @@ export default function RootLayout({
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">Infrastructure Cost Calculator</h1>
+                <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100">Infrastructure Cost Calculator</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-300">Compare cloud, Kubernetes and on-prem costs instantly</p>
               </div>
             </div>

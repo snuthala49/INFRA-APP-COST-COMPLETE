@@ -116,8 +116,8 @@ body::before {
 }
 
 /* ensure title has correct color in light and dark modes */
-.site-title { color: #f3f4f6; font-weight: 700; }
-.dark .site-title { color: #ffffff; }
+.site-title { color: #111827; font-weight: 700; }
+.dark .site-title { color: #f9fafb; }
 
 .card { background-clip: padding-box; }
 
@@ -135,8 +135,8 @@ body::before {
 .price-large { font-size: 2.4rem; color: var(--ucalc-blue); }
 .price-sub { color: var(--ucalc-muted); font-size: 0.85rem; }
 
-.provider-chip { background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 9999px; font-size: 0.75rem; display: inline-flex; gap: 6px; align-items: center; }
-.provider-chip.cheapest { background: linear-gradient(90deg, rgba(11,116,222,0.12), rgba(255,140,66,0.06)); box-shadow: 0 6px 18px rgba(11,116,222,0.08); }
+.provider-chip { background: rgba(255,255,255,0.06); color: #111827; padding: 3px 8px; border-radius: 9999px; font-size: 0.75rem; display: inline-flex; gap: 6px; align-items: center; }
+.provider-chip.cheapest { background: linear-gradient(90deg, rgba(59,130,246,0.22), rgba(14,165,233,0.18)); color: #0f172a; box-shadow: 0 6px 18px rgba(14,165,233,0.18); border: 1px solid rgba(14,165,233,0.35); }
 
 /* stronger colored accent on the left edge */
 .card-accent-left::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; border-top-left-radius: 12px; border-bottom-left-radius: 12px; background: var(--accent-color, linear-gradient(180deg, rgba(124,58,237,0.36), rgba(11,116,222,0.28))); }
@@ -148,8 +148,9 @@ body::before {
 .provider-chip .dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; }
 
 /* cheapest highlight */
-.cheapest { box-shadow: 0 6px 30px rgba(124,58,237,0.12); transform: translateY(-6px); border: 1px solid rgba(124,58,237,0.18); }
-.cheapest .price-large { color: #5b21b6; }
+.cheapest { box-shadow: 0 10px 36px rgba(14,165,233,0.18); transform: translateY(-6px); border: 1px solid rgba(14,165,233,0.35); background: linear-gradient(180deg, rgba(224,242,254,0.9), #ffffff); }
+.cheapest .price-large { color: #0f172a; text-shadow: none; }
+.cheapest .plan-name { color: #0f172a; }
 
 /* subtle hover */
 .card:hover .price-large { transform: translateY(-2px); transition: transform .18s ease; }

@@ -7,6 +7,7 @@ interface Props {
   currency?: string;
   breakdown?: { [k: string]: number };
   cheapest?: boolean;
+  assumptions?: string;
   selected_instance?: {
     type: string;
     vcpu: number;
@@ -24,7 +25,7 @@ const colors: { [k: string]: string } = {
   onprem: "from-stone-200 to-stone-300 text-gray-900",
 };
 
-const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, selected_instance }) => {
+const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, assumptions, selected_instance }) => {
   const [open, setOpen] = useState(false);
   const fmt = (v: number) => {
     try {
@@ -120,30 +121,51 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
         </div>
 
         <div className="mt-4 flex gap-2 flex-wrap">
-          {['cpu','ram','storage','network'].map((k) => (
-            breakdown && breakdown[k] !== undefined ? (
-              <div key={k} className="stat-chip">
-                <div className="stat-key">{k.toUpperCase()}</div>
-                <div className="stat-val">{k === 'ram' ? `${Number(breakdown[k])} GB` : k === 'storage' ? `${Number(breakdown[k])} GB` : k === 'network' ? `${Number(breakdown[k])} Mbps` : `${Number(breakdown[k])}`}</div>
+          {[
+            { label: 'Compute', key: 'compute' },
+            { label: 'Storage', key: 'storage' },
+            { label: 'Network', key: 'network' },
+            { label: 'Backup', key: 'backup' },
+          ].map(({ label, key }) => {
+            if (!breakdown) return null;
+            const rawValue = key === 'compute' ? (breakdown[key] ?? breakdown.cpu) : breakdown[key];
+            if (rawValue === undefined) return null;
+            return (
+              <div key={key} className="stat-chip">
+                <div className="stat-key">{label}</div>
+                <div className="stat-val">{fmt(Number(rawValue))}</div>
               </div>
-            ) : null
-          ))}
+            );
+          })}
         </div>
 
         <div className={`p-3 bg-gray-50 dark:bg-gray-800 overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96' : 'max-h-0'}`}>
           {breakdown ? (
-            <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
-              {Object.entries(breakdown).map(([k, v]) => (
-                <li key={k} className="flex justify-between">
-                  <span className="capitalize">{k}</span>
-                  <span className="font-mono">{fmt(Number(v))}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-2">
+              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
+                {Object.entries(breakdown).map(([k, v]) => (
+                  <li key={k} className="flex justify-between">
+                    <span className="capitalize">{k}</span>
+                    <span className="font-mono">{fmt(Number(v))}</span>
+                  </li>
+                ))}
+              </ul>
+              {assumptions ? (
+                <div className="text-[11px] leading-snug text-gray-500 dark:text-gray-400 italic">
+                  {assumptions}
+                </div>
+              ) : null}
+            </div>
           ) : (
             <div className="text-sm text-gray-600 dark:text-gray-300">No details available</div>
           )}
         </div>
+
+        {assumptions ? (
+          <div className="mt-3 text-[11px] leading-snug text-gray-500 dark:text-gray-400 italic">
+            {assumptions}
+          </div>
+        ) : null}
       </div>
     );
   } catch (err) {

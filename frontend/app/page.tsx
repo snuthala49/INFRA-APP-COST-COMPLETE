@@ -11,6 +11,7 @@ interface CostResult {
   note?: string;
   currency?: string;
   breakdown?: { [k: string]: number };
+  assumptions?: string;
   selected_instance?: {
     type: string;
     vcpu: number;
@@ -95,7 +96,7 @@ export default function Home() {
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Cheapest option</div>
-                  <div className="text-lg font-semibold text-gray-900 dark:text-white">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total)}</div>
+                  <div className="text-lg font-semibold text-indigo-700 dark:text-cyan-300">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total)}</div>
                 </div>
                 <div className="text-sm text-gray-400">Comparisons: {results.length}</div>
               </div>
@@ -138,7 +139,7 @@ export default function Home() {
                   >
                     {results.map((r, idx) => (
                       <div key={idx} className="flex-shrink-0 w-[260px] sm:w-[280px]">
-                        <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} selected_instance={r.selected_instance} />
+                        <ProviderCard provider={r.provider} total={Math.round(r.total * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} assumptions={r.assumptions} selected_instance={r.selected_instance} />
                       </div>
                     ))}
                   </div>
