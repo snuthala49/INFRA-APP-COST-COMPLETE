@@ -79,5 +79,5 @@ test('calculate shows non-zero azure and gcp totals', async ({ page, baseURL }) 
 
   // AWS MVP: selected_instance should be displayed on the AWS card
   const awsCard = page.locator('[data-testid="card-aws"]').first();
-  await expect(awsCard.locator('.text-xs', { hasText: 'Instance' })).toBeVisible({ timeout: 2000 });
+  await expect(awsCard.locator('.text-xs', { hasText: /vCPU|GB RAM/ })).toBeVisible({ timeout: 2000 });
 });
