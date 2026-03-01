@@ -28,4 +28,4 @@ jobs:
             cd frontend
             npm install
             npm run build
-            pm2 restart frontend
+            pm2 restart frontend 
