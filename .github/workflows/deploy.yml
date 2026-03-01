@@ -23,9 +23,9 @@ jobs:
             cd /var/www/app
             git pull origin main
 
-            sudo systemctl restart flask-api
-
             cd frontend
             npm install
             npm run build
-            pm2 restart frontend 
+
+            sudo systemctl restart frontend
+            sudo systemctl restart flask-api
