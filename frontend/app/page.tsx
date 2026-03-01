@@ -80,7 +80,7 @@ export default function Home() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18v4H3z" fill="currentColor" opacity="0.9"></path><path d="M5 13h14v6H5z" fill="currentColor" opacity="0.7"></path></svg>
           </div>
           <div>
-            <div className="site-title">CI CD AUTOMATION</div>
+            <div className="site-title">Testing CI CD AUTOMATION</div>
             <div className="site-sub">Compare cloud, Kubernetes and on-prem costs instantly</div>
           </div>
         </div>
