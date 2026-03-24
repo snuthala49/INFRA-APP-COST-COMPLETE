@@ -79,7 +79,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
 
   try {
     return (
-      <div data-testid={`card-${p}`} className={`plan-tile ${cheapest ? 'cheapest pulse' : ''} card-accent-left`} style={{boxShadow: '0 6px 28px rgba(2,6,23,0.06)'}}>
+      <div data-testid={`card-${p}`} className={`plan-tile ${cheapest ? 'cheapest pulse' : ''} card-accent-left text-slate-800`} style={{boxShadow: '0 6px 28px rgba(2,6,23,0.06)'}}>
         <div className="plan-header">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-md bg-white/10 flex items-center justify-center">
@@ -91,7 +91,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             <div>
               <div className="plan-name">{provider}</div>
               {selected_instance ? (
-                <div className="text-xs text-gray-600 dark:text-gray-400 font-mono">
+                <div className="text-xs text-slate-600 font-mono">
                   {selected_instance.type} • {selected_instance.vcpu} vCPU • {selected_instance.memory_gb} GB RAM
                 </div>
               ) : (
@@ -103,7 +103,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             {cheapest && p !== 'onprem' ? <div className="provider-chip cheapest" aria-hidden><span className="dot" style={{background: accent[p]}} />Cheapest</div> : null}
             <button 
               onClick={() => setOpen(!open)} 
-              className="text-sm bg-white/8 hover:bg-white/12 px-3 py-1 rounded transition-colors"
+              className="text-sm text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-3 py-1 rounded transition-colors"
             >
               {open ? 'Hide' : 'Details'}
             </button>
@@ -139,10 +139,10 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
           })}
         </div>
 
-        <div className={`overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96 p-3 bg-gray-50 dark:bg-gray-800' : 'max-h-0 p-0 bg-transparent'}`}>
+        <div className={`overflow-hidden transition-[max-height] duration-200 ${open ? 'max-h-96 p-3 bg-slate-50' : 'max-h-0 p-0 bg-transparent'}`}>
           {breakdown ? (
             <div className="space-y-2">
-              <ul className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
+              <ul className="text-sm text-slate-700 space-y-1">
                 {Object.entries(breakdown).map(([k, v]) => (
                   <li key={k} className="flex justify-between">
                     <span className="capitalize">{k}</span>
@@ -151,13 +151,13 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
                 ))}
               </ul>
               {assumptions ? (
-                <div className="text-[11px] leading-snug text-gray-500 dark:text-gray-400 italic">
+                <div className="text-[11px] leading-snug text-slate-500 italic">
                   {assumptions}
                 </div>
               ) : null}
             </div>
           ) : (
-            <div className="text-sm text-gray-600 dark:text-gray-300">No details available</div>
+            <div className="text-sm text-slate-600">No details available</div>
           )}
         </div>
 

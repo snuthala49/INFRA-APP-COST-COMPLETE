@@ -7,46 +7,90 @@ interface Result {
   currency?: string;
   breakdown?: { [k: string]: number };
   selected_instance?: {
+    type?: string;
     vcpu: number;
     memory_gb: number;
+    category?: string;
+    description?: string;
   };
   assumptions?: string;
 }
 
-interface Props { results: Result[]; multiplier?: number }
+interface Props { results: Result[]; multiplier?: number; period?: 'monthly' | 'annual' }
 
-const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
-  const rows = ['CPU','RAM','Storage','Network','Backup','Monthly','Assumptions'];
-  const getRowValue = (row: string, r: Result) => {
-    if (row === 'CPU') {
-      return r.breakdown?.compute ?? r.breakdown?.cpu;
+const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'monthly' }) => {
+  const costLabel = period === 'annual' ? 'Annual' : 'Monthly';
+  const rows = ['Instance', 'vCPU', 'RAM (GB)', 'Storage', 'Network', 'Backup', costLabel];
+
+  const infraLabel = (provider: string, row: string): string => {
+    const p = provider.toLowerCase();
+    const lookup: Record<string, Record<string, string>> = {
+      aws: {
+        'Storage': 'EBS gp3',
+        'Network': 'Data transfer out',
+        'Backup': 'EBS snapshots / S3',
+      },
+      azure: {
+        'Storage': 'Managed Disk (Standard SSD)',
+        'Network': 'Outbound bandwidth',
+        'Backup': 'Azure Backup (LRS)',
+      },
+      gcp: {
+        'Storage': 'Persistent Disk (Balanced)',
+        'Network': 'Egress bandwidth',
+        'Backup': 'Cloud Storage Standard',
+      },
+      kubernetes: {
+        'Storage': 'Cluster persistent volumes',
+        'Network': 'Ingress / egress baseline',
+        'Backup': 'Cluster backup baseline',
+      },
+      onprem: {
+        'Storage': 'Local SAN/NAS baseline',
+        'Network': 'On-prem network baseline',
+        'Backup': 'Backup baseline',
+      },
+    };
+    return lookup[p]?.[row] || '-';
+  };
+
+  const rowDisplayValue = (row: string, r: Result) => {
+    const p = r.provider.toLowerCase();
+    
+    if (row === 'Instance') {
+      if (p === 'kubernetes') return 'K8s cluster baseline';
+      if (p === 'onprem') return 'On-prem hardware baseline';
+      return r.selected_instance?.type || '-';
     }
-    if (row === 'RAM') {
-      return r.breakdown?.compute ?? r.breakdown?.ram;
+    
+    if (row === 'vCPU') {
+      if ((p === 'kubernetes' || p === 'onprem') && !r.selected_instance?.vcpu) {
+        return 'Scaled to workload';
+      }
+      return r.selected_instance?.vcpu ?? '-';
     }
-    if (row === 'Storage') {
-      return r.breakdown?.storage;
+    
+    if (row === 'RAM (GB)') {
+      if ((p === 'kubernetes' || p === 'onprem') && !r.selected_instance?.memory_gb) {
+        return 'Scaled to workload';
+      }
+      return r.selected_instance?.memory_gb ?? '-';
     }
-    if (row === 'Network') {
-      return r.breakdown?.network;
-    }
-    if (row === 'Backup') {
-      return r.breakdown?.backup;
-    }
-    const key = row.toLowerCase();
-    return r.breakdown?.[key];
+    
+    if (row === 'Storage' || row === 'Network' || row === 'Backup') return infraLabel(r.provider, row);
+    return '-';
   };
 
   return (
     <div className="card p-4 mt-6">
-      <h4 className="text-sm text-gray-600 mb-3">Comparison</h4>
+      <h4 className="text-base font-bold text-slate-800 mb-3">Comparison</h4>
       <div className="overflow-x-auto">
         <table className="w-full table-auto pricing-table">
           <thead>
-            <tr className="text-left text-sm text-gray-500">
-              <th className="pr-6">Feature</th>
+            <tr className="text-left text-sm text-slate-600">
+              <th className="pr-6 font-semibold text-slate-700">Feature</th>
               {results.map((r) => (
-                <th key={r.provider} className="pr-6 font-semibold text-gray-700 dark:text-gray-300">
+                <th key={r.provider} className="pr-6 font-semibold text-slate-700">
                   {r.provider}
                 </th>
               ))}
@@ -55,15 +99,13 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
           <tbody>
             {rows.map((row) => (
               <tr key={row} className="border-t">
-                <td className="py-3 text-sm font-medium">{row}</td>
+                <td className="py-3 text-sm font-semibold text-slate-700">{row}</td>
                 {results.map((r) => (
                   <td key={r.provider + row} className="py-3 text-sm">
-                    {row === 'Monthly' ? (
-                      <span className="font-semibold">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
-                    ) : row === 'Assumptions' ? (
-                      <span className="text-gray-500 text-xs leading-snug">{r.assumptions || '-'}</span>
+                    {row === costLabel ? (
+                      <span className="font-bold text-slate-900">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
                     ) : (
-                      <span className="text-gray-600">{getRowValue(row, r) !== undefined ? new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(Number(getRowValue(row, r))) : '-'}</span>
+                      <span className="text-slate-600">{rowDisplayValue(row, r)}</span>
                     )}
                   </td>
                 ))}
@@ -71,6 +113,18 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1 }) => {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Assumptions section below table */}
+      <div className="mt-4 space-y-2">
+        {results.map((r, idx) => r.assumptions ? (
+          <details key={idx} className="text-xs text-slate-500">
+            <summary className="cursor-pointer font-semibold text-slate-600 hover:text-slate-800">
+              {r.provider} assumptions
+            </summary>
+            <p className="mt-1 pl-4 italic leading-snug text-slate-500">{r.assumptions}</p>
+          </details>
+        ) : null)}
       </div>
     </div>
   );
