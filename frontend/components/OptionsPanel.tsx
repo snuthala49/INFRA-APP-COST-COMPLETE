@@ -22,7 +22,7 @@ interface Props {
 const OptionsPanel: React.FC<Props> = ({ cpu, ram, storage, network, backup, setCpu, setRam, setStorage, setNetwork, setBackup, period, setPeriod, onCalculate, loading }) => {
   return (
     <div className="calculator-panel card">
-      <h3 className="text-lg font-semibold mb-3">Configure instance</h3>
+      <h3 className="text-lg font-semibold mb-3 text-slate-800">Configure instance</h3>
       <div className="grid gap-3">
         <InputField label="CPU (vCPUs)" value={cpu} onChange={setCpu} />
         <InputField label="RAM (GB)" value={ram} onChange={setRam} />
@@ -32,7 +32,7 @@ const OptionsPanel: React.FC<Props> = ({ cpu, ram, storage, network, backup, set
       </div>
 
       <div className="mt-4">
-        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Billing period</div>
+        <div className="text-sm text-slate-700 mb-2">Billing period</div>
         <div className="flex gap-2">
           <button 
             onClick={() => setPeriod('monthly')} 

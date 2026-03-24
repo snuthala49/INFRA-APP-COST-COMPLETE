@@ -1,59 +1,100 @@
-def calculate_onprem_tco(cpu=0, ram=0, storage=0, network=0, backup=0, **kwargs):
-	"""On-prem TCO baseline model with industry-style assumptions.
+def calculate_onprem_tco(
+    cpu=0,
+    ram=0,
+    storage=0,
+    network=0,   # Mbps
+    backup=0,    # GB
+):
+    """
+    Executive-level On-Prem TCO model (finance-grade).
 
-	Assumptions:
-	- 3-year amortization
-	- 1.5x redundancy
-	- $0.12/kWh power cost
-	- PUE 1.5
-	"""
-	# Baseline assumptions
-	amort_years = 3
-	redundancy = 1.5
-	power_rate = 0.12  # $/kWh
-	pue = 1.5
+    Assumptions:
+    - 4-year amortization
+    - 1.4x redundancy (HA + buffer)
+    - $0.10/kWh power cost
+    - PUE 1.5
+    - Includes facilities + operations
+    """
 
-	# CapEx unit costs (baseline industry-style placeholders)
-	capex_per_vcpu = 400.0
-	capex_per_gb_ram = 30.0
-	capex_per_gb_storage = 0.08
+    # ---- Core assumptions ----
+    amort_years = 4
+    redundancy = 1.4
+    power_rate = 0.10  # $/kWh
+    pue = 1.5
 
-	# Power draw estimates (watts)
-	watts_per_vcpu = 10.0
-	watts_per_gb_ram = 0.5
-	watts_per_gb_storage = 0.1
+    # ---- CapEx unit costs (realistic enterprise blended) ----
+    capex_per_vcpu = 150.0
+    capex_per_gb_ram = 10.0
+    capex_per_gb_storage = 0.05
 
-	# CapEx amortized monthly
-	capex_total = (cpu * capex_per_vcpu) + (ram * capex_per_gb_ram) + (storage * capex_per_gb_storage)
-	capex_monthly = (capex_total / (amort_years * 12)) * redundancy
+    # ---- Power model (blended per compute unit) ----
+    watts_per_vcpu = 5.0
+    watts_per_gb_ram = 0.3
+    watts_per_gb_storage = 0.05
 
-	# Power + cooling monthly
-	watts_total = (cpu * watts_per_vcpu) + (ram * watts_per_gb_ram) + (storage * watts_per_gb_storage)
-	monthly_kwh = (watts_total / 1000.0) * 24 * 30 * pue
-	power_cost = monthly_kwh * power_rate * redundancy
+    # ---- CapEx total ----
+    capex_total = (
+        cpu * capex_per_vcpu
+        + ram * capex_per_gb_ram
+        + storage * capex_per_gb_storage
+    )
 
-	# Ops/maintenance overhead (10% of capex+power)
-	overhead = 0.10 * (capex_monthly + power_cost)
+    # Amortized monthly with redundancy
+    capex_monthly = (capex_total / (amort_years * 12)) * redundancy
 
-	# Network and backup baseline costs (industry-style placeholders)
-	network_rate = 0.02  # $ per Mbps / month
-	backup_rate = 0.02   # $ per GB / month
+    # ---- Power + cooling ----
+    watts_total = (
+        cpu * watts_per_vcpu
+        + ram * watts_per_gb_ram
+        + storage * watts_per_gb_storage
+    )
 
-	network_cost = network * network_rate
-	backup_cost = backup * backup_rate
+    monthly_kwh = (watts_total / 1000.0) * 24 * 30 * pue
+    power_cost = monthly_kwh * power_rate * redundancy
 
-	total = capex_monthly + power_cost + overhead + network_cost + backup_cost
+    # ---- Facilities (15% of CapEx monthly) ----
+    facilities_cost = 0.15 * capex_monthly
 
-	return {
-		"provider": "onprem",
-		"total": round(total, 2),
-		"currency": "USD",
-		"assumptions": "On-prem baseline: 3-year amortization, 1.5x redundancy, $0.12/kWh, PUE 1.5, network $0.02/Mbps, backup $0.02/GB",
-		"breakdown": {
-			"cpu": round(capex_monthly, 2),
-			"ram": round(power_cost, 2),
-			"storage": round(overhead, 2),
-			"network": round(network_cost, 2),
-			"backup": round(backup_cost, 2),
-		},
-	}
+    # ---- Operations (25% annually of CapEx → monthly) ----
+    ops_cost = (0.25 * capex_total / 12) * redundancy
+
+    # ---- Network (normalized to cloud-style transfer model) ----
+    # Convert sustained Mbps to estimated monthly GB transfer for apples-to-apples comparison
+    monthly_gb_transfer = network * 3600 * 24 * 30 / 8 / 1024
+    network_rate_per_gb = 0.03  # $ per GB / month (enterprise blended WAN/transit baseline)
+    network_cost = monthly_gb_transfer * network_rate_per_gb
+
+    # ---- Backup / DR ----
+    backup_rate = 0.03  # $ per GB / month
+    backup_cost = backup * backup_rate
+
+    # ---- OpEx + Total ----
+    opex_monthly = (
+        power_cost
+        + facilities_cost
+        + ops_cost
+        + network_cost
+        + backup_cost
+    )
+    total = capex_monthly + opex_monthly
+
+    return {
+        "provider": "onprem",
+        "total": round(total, 2),
+        "capex_monthly": round(capex_monthly, 2),
+        "opex_monthly": round(opex_monthly, 2),
+        "currency": "USD",
+        "assumptions": (
+            "Executive TCO: 4yr amortization, 1.4x redundancy, $0.10/kWh, "
+            "PUE 1.5, facilities 15%, ops 25% annually, "
+            "network converted Mbps→GB at $0.03/GB, backup $0.03/GB"
+        ),
+        "breakdown": {
+            "capex": round(capex_monthly, 2),
+            "power": round(power_cost, 2),
+            "facilities": round(facilities_cost, 2),
+            "operations": round(ops_cost, 2),
+            "network": round(network_cost, 2),
+            "backup": round(backup_cost, 2),
+        },
+    }

@@ -11,7 +11,7 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
   const id = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
   return (
     <div className="flex flex-col mb-2">
-      <label htmlFor={id} className="mb-1 font-medium text-sm text-gray-700 dark:text-gray-200">{label}</label>
+      <label htmlFor={id} className="mb-1 font-semibold text-sm text-slate-800">{label}</label>
         <input
           id={id}
           type="number"
