@@ -2,6 +2,13 @@ import json
 import os
 
 
+def _hourly_price(entry):
+    rate = entry.get("price_per_hour", 0)
+    if isinstance(rate, dict):
+        return rate.get("on_demand", 0)
+    return rate
+
+
 def load_gcp_catalog():
     """Load GCP instance SKUs from JSON catalog."""
     catalog_path = os.path.join(
@@ -34,8 +41,13 @@ def find_best_fit(cpu, ram):
 
     catalog = load_gcp_catalog()
 
+    baseline_families = {"n1-standard", "n2-standard", "n2-highmem"}
+    baseline_catalog = [sku for sku in catalog if sku.get("family") in baseline_families]
+    if not baseline_catalog:
+        baseline_catalog = catalog
+
     # Sort by vcpu then by ram for consistent best-fit selection
-    sorted_skus = sorted(catalog, key=lambda s: (s["vcpu"], s["ram_gb"]))
+    sorted_skus = sorted(baseline_catalog, key=lambda s: (s["vcpu"], s["ram_gb"]))
 
     # Find exact fit (vcpu >= cpu AND ram_gb >= ram)
     for sku in sorted_skus:
@@ -45,7 +57,7 @@ def find_best_fit(cpu, ram):
                 "family": sku["family"],
                 "vcpu": sku["vcpu"],
                 "ram_gb": sku["ram_gb"],
-                "price_per_hour": sku["price_per_hour"],
+                "price_per_hour": _hourly_price(sku),
                 "count": 1,
             }
 
@@ -57,7 +69,7 @@ def find_best_fit(cpu, ram):
         "family": largest["family"],
         "vcpu": largest["vcpu"],
         "ram_gb": largest["ram_gb"],
-        "price_per_hour": largest["price_per_hour"],
+        "price_per_hour": _hourly_price(largest),
         "count": count,
     }
 

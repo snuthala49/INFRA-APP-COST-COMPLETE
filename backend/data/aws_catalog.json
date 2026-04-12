@@ -1,11 +1,730 @@
 [
-  {"sku": "t3.small", "family": "t3", "vcpu": 1, "ram_gb": 2, "price_per_hour": 0.0208},
-  {"sku": "t3.medium", "family": "t3", "vcpu": 1, "ram_gb": 4, "price_per_hour": 0.0416},
-  {"sku": "t3.large", "family": "t3", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.0832},
-  {"sku": "m5.large", "family": "m5", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.096},
-  {"sku": "m5.xlarge", "family": "m5", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.192},
-  {"sku": "m5.2xlarge", "family": "m5", "vcpu": 8, "ram_gb": 32, "price_per_hour": 0.384},
-  {"sku": "r5.large", "family": "r5", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
-  {"sku": "r5.xlarge", "family": "r5", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252},
-  {"sku": "r5.2xlarge", "family": "r5", "vcpu": 8, "ram_gb": 64, "price_per_hour": 0.504}
+  {
+    "sku": "t3.nano",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 0.5,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.0052,
+      "reserved_1yr": 0.00322,
+      "reserved_3yr": 0.00224,
+      "spot": 0.00156
+    }
+  },
+  {
+    "sku": "t3.micro",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 1,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.0104,
+      "reserved_1yr": 0.00645,
+      "reserved_3yr": 0.00447,
+      "spot": 0.00312
+    }
+  },
+  {
+    "sku": "t3.small",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 2,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.0208,
+      "reserved_1yr": 0.0129,
+      "reserved_3yr": 0.00894,
+      "spot": 0.00624
+    }
+  },
+  {
+    "sku": "t3.medium",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 4,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.0416,
+      "reserved_1yr": 0.02579,
+      "reserved_3yr": 0.01789,
+      "spot": 0.01248
+    }
+  },
+  {
+    "sku": "t3.large",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.0832,
+      "reserved_1yr": 0.05158,
+      "reserved_3yr": 0.03578,
+      "spot": 0.02496
+    }
+  },
+  {
+    "sku": "t3.xlarge",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.1664,
+      "reserved_1yr": 0.10317,
+      "reserved_3yr": 0.07155,
+      "spot": 0.04992
+    }
+  },
+  {
+    "sku": "t3.2xlarge",
+    "family": "t3",
+    "category": "general",
+    "vcpu": 8,
+    "ram_gb": 32,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.3328,
+      "reserved_1yr": 0.20634,
+      "reserved_3yr": 0.1431,
+      "spot": 0.09984
+    }
+  },
+  {
+    "sku": "m5.large",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.096,
+      "reserved_1yr": 0.05952,
+      "reserved_3yr": 0.04128,
+      "spot": 0.0288
+    }
+  },
+  {
+    "sku": "m5.xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.192,
+      "reserved_1yr": 0.11904,
+      "reserved_3yr": 0.08256,
+      "spot": 0.0576
+    }
+  },
+  {
+    "sku": "m5.2xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 8,
+    "ram_gb": 32,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.384,
+      "reserved_1yr": 0.23808,
+      "reserved_3yr": 0.16512,
+      "spot": 0.1152
+    }
+  },
+  {
+    "sku": "m5.4xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 16,
+    "ram_gb": 64,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.768,
+      "reserved_1yr": 0.47616,
+      "reserved_3yr": 0.33024,
+      "spot": 0.2304
+    }
+  },
+  {
+    "sku": "m5.8xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 32,
+    "ram_gb": 128,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 1.536,
+      "reserved_1yr": 0.95232,
+      "reserved_3yr": 0.66048,
+      "spot": 0.4608
+    }
+  },
+  {
+    "sku": "m5.12xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 48,
+    "ram_gb": 192,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 2.304,
+      "reserved_1yr": 1.42848,
+      "reserved_3yr": 0.99072,
+      "spot": 0.6912
+    }
+  },
+  {
+    "sku": "m5.16xlarge",
+    "family": "m5",
+    "category": "general",
+    "vcpu": 64,
+    "ram_gb": 256,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 3.072,
+      "reserved_1yr": 1.90464,
+      "reserved_3yr": 1.32096,
+      "spot": 0.9216
+    }
+  },
+  {
+    "sku": "r5.large",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 2,
+    "ram_gb": 16,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.126,
+      "reserved_1yr": 0.07812,
+      "reserved_3yr": 0.05418,
+      "spot": 0.0378
+    }
+  },
+  {
+    "sku": "r5.xlarge",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 4,
+    "ram_gb": 32,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.252,
+      "reserved_1yr": 0.15624,
+      "reserved_3yr": 0.10836,
+      "spot": 0.0756
+    }
+  },
+  {
+    "sku": "r5.2xlarge",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 8,
+    "ram_gb": 64,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.504,
+      "reserved_1yr": 0.31248,
+      "reserved_3yr": 0.21672,
+      "spot": 0.1512
+    }
+  },
+  {
+    "sku": "r5.4xlarge",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 16,
+    "ram_gb": 128,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 1.008,
+      "reserved_1yr": 0.62496,
+      "reserved_3yr": 0.43344,
+      "spot": 0.3024
+    }
+  },
+  {
+    "sku": "r5.8xlarge",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 32,
+    "ram_gb": 256,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 2.016,
+      "reserved_1yr": 1.24992,
+      "reserved_3yr": 0.86688,
+      "spot": 0.6048
+    }
+  },
+  {
+    "sku": "r5.12xlarge",
+    "family": "r5",
+    "category": "memory",
+    "vcpu": 48,
+    "ram_gb": 384,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 3.024,
+      "reserved_1yr": 1.87488,
+      "reserved_3yr": 1.30032,
+      "spot": 0.9072
+    }
+  },
+  {
+    "sku": "c5.large",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 2,
+    "ram_gb": 4,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.085,
+      "reserved_1yr": 0.0527,
+      "reserved_3yr": 0.03655,
+      "spot": 0.0255
+    }
+  },
+  {
+    "sku": "c5.xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 4,
+    "ram_gb": 8,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.17,
+      "reserved_1yr": 0.1054,
+      "reserved_3yr": 0.0731,
+      "spot": 0.051
+    }
+  },
+  {
+    "sku": "c5.2xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 8,
+    "ram_gb": 16,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.34,
+      "reserved_1yr": 0.2108,
+      "reserved_3yr": 0.1462,
+      "spot": 0.102
+    }
+  },
+  {
+    "sku": "c5.4xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 16,
+    "ram_gb": 32,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.68,
+      "reserved_1yr": 0.4216,
+      "reserved_3yr": 0.2924,
+      "spot": 0.204
+    }
+  },
+  {
+    "sku": "c5.9xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 36,
+    "ram_gb": 72,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 1.53,
+      "reserved_1yr": 0.9486,
+      "reserved_3yr": 0.6579,
+      "spot": 0.459
+    }
+  },
+  {
+    "sku": "c5.12xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 48,
+    "ram_gb": 96,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 2.04,
+      "reserved_1yr": 1.2648,
+      "reserved_3yr": 0.8772,
+      "spot": 0.612
+    }
+  },
+  {
+    "sku": "c5.18xlarge",
+    "family": "c5",
+    "category": "compute",
+    "vcpu": 72,
+    "ram_gb": 144,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 3.06,
+      "reserved_1yr": 1.8972,
+      "reserved_3yr": 1.3158,
+      "spot": 0.918
+    }
+  },
+  {
+    "sku": "c6i.large",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 2,
+    "ram_gb": 4,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.085,
+      "reserved_1yr": 0.0527,
+      "reserved_3yr": 0.03655,
+      "spot": 0.0255
+    }
+  },
+  {
+    "sku": "c6i.xlarge",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 4,
+    "ram_gb": 8,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.17,
+      "reserved_1yr": 0.1054,
+      "reserved_3yr": 0.0731,
+      "spot": 0.051
+    }
+  },
+  {
+    "sku": "c6i.2xlarge",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 8,
+    "ram_gb": 16,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.34,
+      "reserved_1yr": 0.2108,
+      "reserved_3yr": 0.1462,
+      "spot": 0.102
+    }
+  },
+  {
+    "sku": "c6i.4xlarge",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 16,
+    "ram_gb": 32,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.68,
+      "reserved_1yr": 0.4216,
+      "reserved_3yr": 0.2924,
+      "spot": 0.204
+    }
+  },
+  {
+    "sku": "c6i.8xlarge",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 32,
+    "ram_gb": 64,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 1.36,
+      "reserved_1yr": 0.8432,
+      "reserved_3yr": 0.5848,
+      "spot": 0.408
+    }
+  },
+  {
+    "sku": "c6i.12xlarge",
+    "family": "c6i",
+    "category": "compute",
+    "vcpu": 48,
+    "ram_gb": 96,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 2.04,
+      "reserved_1yr": 1.2648,
+      "reserved_3yr": 0.8772,
+      "spot": 0.612
+    }
+  },
+  {
+    "sku": "m6i.large",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.096,
+      "reserved_1yr": 0.05952,
+      "reserved_3yr": 0.04128,
+      "spot": 0.0288
+    }
+  },
+  {
+    "sku": "m6i.xlarge",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.192,
+      "reserved_1yr": 0.11904,
+      "reserved_3yr": 0.08256,
+      "spot": 0.0576
+    }
+  },
+  {
+    "sku": "m6i.2xlarge",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 8,
+    "ram_gb": 32,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.384,
+      "reserved_1yr": 0.23808,
+      "reserved_3yr": 0.16512,
+      "spot": 0.1152
+    }
+  },
+  {
+    "sku": "m6i.4xlarge",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 16,
+    "ram_gb": 64,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.768,
+      "reserved_1yr": 0.47616,
+      "reserved_3yr": 0.33024,
+      "spot": 0.2304
+    }
+  },
+  {
+    "sku": "m6i.8xlarge",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 32,
+    "ram_gb": 128,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 1.536,
+      "reserved_1yr": 0.95232,
+      "reserved_3yr": 0.66048,
+      "spot": 0.4608
+    }
+  },
+  {
+    "sku": "m6i.12xlarge",
+    "family": "m6i",
+    "category": "general",
+    "vcpu": 48,
+    "ram_gb": 192,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 2.304,
+      "reserved_1yr": 1.42848,
+      "reserved_3yr": 0.99072,
+      "spot": 0.6912
+    }
+  },
+  {
+    "sku": "r6i.large",
+    "family": "r6i",
+    "category": "memory",
+    "vcpu": 2,
+    "ram_gb": 16,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.126,
+      "reserved_1yr": 0.07812,
+      "reserved_3yr": 0.05418,
+      "spot": 0.0378
+    }
+  },
+  {
+    "sku": "r6i.xlarge",
+    "family": "r6i",
+    "category": "memory",
+    "vcpu": 4,
+    "ram_gb": 32,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.252,
+      "reserved_1yr": 0.15624,
+      "reserved_3yr": 0.10836,
+      "spot": 0.0756
+    }
+  },
+  {
+    "sku": "r6i.2xlarge",
+    "family": "r6i",
+    "category": "memory",
+    "vcpu": 8,
+    "ram_gb": 64,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.504,
+      "reserved_1yr": 0.31248,
+      "reserved_3yr": 0.21672,
+      "spot": 0.1512
+    }
+  },
+  {
+    "sku": "r6i.4xlarge",
+    "family": "r6i",
+    "category": "memory",
+    "vcpu": 16,
+    "ram_gb": 128,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 1.008,
+      "reserved_1yr": 0.62496,
+      "reserved_3yr": 0.43344,
+      "spot": 0.3024
+    }
+  },
+  {
+    "sku": "r6i.8xlarge",
+    "family": "r6i",
+    "category": "memory",
+    "vcpu": 32,
+    "ram_gb": 256,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 2.016,
+      "reserved_1yr": 1.24992,
+      "reserved_3yr": 0.86688,
+      "spot": 0.6048
+    }
+  },
+  {
+    "sku": "p3.2xlarge",
+    "family": "p3",
+    "category": "gpu",
+    "vcpu": 8,
+    "ram_gb": 61,
+    "description": "GPU optimized",
+    "price_per_hour": {
+      "on_demand": 3.06,
+      "reserved_1yr": 1.8972,
+      "reserved_3yr": 1.3158,
+      "spot": 0.918
+    }
+  },
+  {
+    "sku": "p3.8xlarge",
+    "family": "p3",
+    "category": "gpu",
+    "vcpu": 32,
+    "ram_gb": 244,
+    "description": "GPU optimized",
+    "price_per_hour": {
+      "on_demand": 12.24,
+      "reserved_1yr": 7.5888,
+      "reserved_3yr": 5.2632,
+      "spot": 3.672
+    }
+  },
+  {
+    "sku": "g4dn.xlarge",
+    "family": "g4dn",
+    "category": "gpu",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "GPU optimized",
+    "price_per_hour": {
+      "on_demand": 0.526,
+      "reserved_1yr": 0.32612,
+      "reserved_3yr": 0.22618,
+      "spot": 0.1578
+    }
+  },
+  {
+    "sku": "g4dn.2xlarge",
+    "family": "g4dn",
+    "category": "gpu",
+    "vcpu": 8,
+    "ram_gb": 32,
+    "description": "GPU optimized",
+    "price_per_hour": {
+      "on_demand": 0.752,
+      "reserved_1yr": 0.46624,
+      "reserved_3yr": 0.32336,
+      "spot": 0.2256
+    }
+  },
+  {
+    "sku": "x1e.xlarge",
+    "family": "x1e",
+    "category": "memory",
+    "vcpu": 4,
+    "ram_gb": 122,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.834,
+      "reserved_1yr": 0.51708,
+      "reserved_3yr": 0.35862,
+      "spot": 0.2502
+    }
+  },
+  {
+    "sku": "x1e.2xlarge",
+    "family": "x1e",
+    "category": "memory",
+    "vcpu": 8,
+    "ram_gb": 244,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 1.668,
+      "reserved_1yr": 1.03416,
+      "reserved_3yr": 0.71724,
+      "spot": 0.5004
+    }
+  },
+  {
+    "sku": "inf1.xlarge",
+    "family": "inf1",
+    "category": "inference",
+    "vcpu": 4,
+    "ram_gb": 8,
+    "description": "Inference optimized",
+    "price_per_hour": {
+      "on_demand": 0.368,
+      "reserved_1yr": 0.22816,
+      "reserved_3yr": 0.15824,
+      "spot": 0.1104
+    }
+  },
+  {
+    "sku": "inf1.2xlarge",
+    "family": "inf1",
+    "category": "inference",
+    "vcpu": 8,
+    "ram_gb": 16,
+    "description": "Inference optimized",
+    "price_per_hour": {
+      "on_demand": 0.736,
+      "reserved_1yr": 0.45632,
+      "reserved_3yr": 0.31648,
+      "spot": 0.2208
+    }
+  }
 ]

@@ -1,0 +1,20 @@
+{
+  "aws": {
+    "gp3": 0.08,
+    "io2": 0.125,
+    "st1": 0.025,
+    "sc1": 0.015
+  },
+  "azure": {
+    "premium_ssd": 0.135,
+    "standard_ssd": 0.1,
+    "standard_hdd": 0.04,
+    "ultra_disk": 0.29
+  },
+  "gcp": {
+    "balanced_pd": 0.1,
+    "ssd_pd": 0.17,
+    "extreme_pd": 0.27,
+    "standard_pd": 0.04
+  }
+}

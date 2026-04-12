@@ -1,8 +1,198 @@
 [
-  {"sku": "Standard_B2s", "family": "B-series", "vcpu": 2, "ram_gb": 4, "price_per_hour": 0.05},
-  {"sku": "Standard_B2ms", "family": "B-series", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.082},
-  {"sku": "Standard_D2s_v3", "family": "D-series", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.1},
-  {"sku": "Standard_D4s_v3", "family": "D-series", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.2},
-  {"sku": "Standard_E2s_v3", "family": "E-series", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
-  {"sku": "Standard_E4s_v3", "family": "E-series", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252}
+  {
+    "sku": "Standard_B2s",
+    "family": "B-series",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 4,
+    "description": "Burstable general purpose",
+    "price_per_hour": {
+      "on_demand": 0.05,
+      "reserved_1yr": 0.031,
+      "reserved_3yr": 0.0215,
+      "spot": 0.015
+    }
+  },
+  {
+    "sku": "Standard_B2ms",
+    "family": "B-series",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "Burstable general purpose",
+    "price_per_hour": {
+      "on_demand": 0.082,
+      "reserved_1yr": 0.05084,
+      "reserved_3yr": 0.03526,
+      "spot": 0.0246
+    }
+  },
+  {
+    "sku": "Standard_D2s_v3",
+    "family": "D-series",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.1,
+      "reserved_1yr": 0.062,
+      "reserved_3yr": 0.043,
+      "spot": 0.03
+    }
+  },
+  {
+    "sku": "Standard_D4s_v3",
+    "family": "D-series",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.2,
+      "reserved_1yr": 0.124,
+      "reserved_3yr": 0.086,
+      "spot": 0.06
+    }
+  },
+  {
+    "sku": "Standard_E2s_v3",
+    "family": "E-series",
+    "category": "memory",
+    "vcpu": 2,
+    "ram_gb": 16,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.126,
+      "reserved_1yr": 0.07812,
+      "reserved_3yr": 0.05418,
+      "spot": 0.0378
+    }
+  },
+  {
+    "sku": "Standard_E4s_v3",
+    "family": "E-series",
+    "category": "memory",
+    "vcpu": 4,
+    "ram_gb": 32,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.252,
+      "reserved_1yr": 0.15624,
+      "reserved_3yr": 0.10836,
+      "spot": 0.0756
+    }
+  },
+  {
+    "sku": "Standard_F4s_v2",
+    "family": "F-series",
+    "category": "compute",
+    "vcpu": 4,
+    "ram_gb": 8,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.169,
+      "reserved_1yr": 0.10478,
+      "reserved_3yr": 0.07267,
+      "spot": 0.0507
+    }
+  },
+  {
+    "sku": "Standard_F8s_v2",
+    "family": "F-series",
+    "category": "compute",
+    "vcpu": 8,
+    "ram_gb": 16,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.338,
+      "reserved_1yr": 0.20956,
+      "reserved_3yr": 0.14534,
+      "spot": 0.1014
+    }
+  },
+  {
+    "sku": "Standard_F16s_v2",
+    "family": "F-series",
+    "category": "compute",
+    "vcpu": 16,
+    "ram_gb": 32,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.676,
+      "reserved_1yr": 0.41912,
+      "reserved_3yr": 0.29068,
+      "spot": 0.2028
+    }
+  },
+  {
+    "sku": "Standard_M8ms",
+    "family": "M-series",
+    "category": "memory",
+    "vcpu": 8,
+    "ram_gb": 218,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 1.95,
+      "reserved_1yr": 1.209,
+      "reserved_3yr": 0.8385,
+      "spot": 0.585
+    }
+  },
+  {
+    "sku": "Standard_M16ms",
+    "family": "M-series",
+    "category": "memory",
+    "vcpu": 16,
+    "ram_gb": 437,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 3.9,
+      "reserved_1yr": 2.418,
+      "reserved_3yr": 1.677,
+      "spot": 1.17
+    }
+  },
+  {
+    "sku": "Standard_NC6s_v3",
+    "family": "NC-series",
+    "category": "gpu",
+    "vcpu": 6,
+    "ram_gb": 112,
+    "description": "GPU compute",
+    "price_per_hour": {
+      "on_demand": 0.9,
+      "reserved_1yr": 0.558,
+      "reserved_3yr": 0.387,
+      "spot": 0.27
+    }
+  },
+  {
+    "sku": "Standard_NC12s_v3",
+    "family": "NC-series",
+    "category": "gpu",
+    "vcpu": 12,
+    "ram_gb": 224,
+    "description": "GPU compute",
+    "price_per_hour": {
+      "on_demand": 1.8,
+      "reserved_1yr": 1.116,
+      "reserved_3yr": 0.774,
+      "spot": 0.54
+    }
+  },
+  {
+    "sku": "Standard_NV6ads_A10_v5",
+    "family": "NV-series",
+    "category": "gpu",
+    "vcpu": 6,
+    "ram_gb": 55,
+    "description": "GPU visualization",
+    "price_per_hour": {
+      "on_demand": 1.05,
+      "reserved_1yr": 0.651,
+      "reserved_3yr": 0.4515,
+      "spot": 0.315
+    }
+  }
 ]

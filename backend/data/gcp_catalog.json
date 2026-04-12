@@ -1,8 +1,184 @@
 [
-  {"sku": "n1-standard-2", "family": "n1-standard", "vcpu": 2, "ram_gb": 7.5, "price_per_hour": 0.095},
-  {"sku": "n1-standard-4", "family": "n1-standard", "vcpu": 4, "ram_gb": 15, "price_per_hour": 0.19},
-  {"sku": "n2-standard-2", "family": "n2-standard", "vcpu": 2, "ram_gb": 8, "price_per_hour": 0.1},
-  {"sku": "n2-standard-4", "family": "n2-standard", "vcpu": 4, "ram_gb": 16, "price_per_hour": 0.2},
-  {"sku": "n2-highmem-2", "family": "n2-highmem", "vcpu": 2, "ram_gb": 16, "price_per_hour": 0.126},
-  {"sku": "n2-highmem-4", "family": "n2-highmem", "vcpu": 4, "ram_gb": 32, "price_per_hour": 0.252}
+  {
+    "sku": "n1-standard-2",
+    "family": "n1-standard",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 7.5,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.095,
+      "reserved_1yr": 0.0589,
+      "reserved_3yr": 0.04085,
+      "spot": 0.0285
+    }
+  },
+  {
+    "sku": "n1-standard-4",
+    "family": "n1-standard",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 15,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.19,
+      "reserved_1yr": 0.1178,
+      "reserved_3yr": 0.0817,
+      "spot": 0.057
+    }
+  },
+  {
+    "sku": "n2-standard-2",
+    "family": "n2-standard",
+    "category": "general",
+    "vcpu": 2,
+    "ram_gb": 8,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.1,
+      "reserved_1yr": 0.062,
+      "reserved_3yr": 0.043,
+      "spot": 0.03
+    }
+  },
+  {
+    "sku": "n2-standard-4",
+    "family": "n2-standard",
+    "category": "general",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "General purpose",
+    "price_per_hour": {
+      "on_demand": 0.2,
+      "reserved_1yr": 0.124,
+      "reserved_3yr": 0.086,
+      "spot": 0.06
+    }
+  },
+  {
+    "sku": "n2-highmem-2",
+    "family": "n2-highmem",
+    "category": "memory",
+    "vcpu": 2,
+    "ram_gb": 16,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.126,
+      "reserved_1yr": 0.07812,
+      "reserved_3yr": 0.05418,
+      "spot": 0.0378
+    }
+  },
+  {
+    "sku": "n2-highmem-4",
+    "family": "n2-highmem",
+    "category": "memory",
+    "vcpu": 4,
+    "ram_gb": 32,
+    "description": "Memory optimized",
+    "price_per_hour": {
+      "on_demand": 0.252,
+      "reserved_1yr": 0.15624,
+      "reserved_3yr": 0.10836,
+      "spot": 0.0756
+    }
+  },
+  {
+    "sku": "c2-standard-4",
+    "family": "c2-standard",
+    "category": "compute",
+    "vcpu": 4,
+    "ram_gb": 16,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.238,
+      "reserved_1yr": 0.14756,
+      "reserved_3yr": 0.10234,
+      "spot": 0.0714
+    }
+  },
+  {
+    "sku": "c2-standard-8",
+    "family": "c2-standard",
+    "category": "compute",
+    "vcpu": 8,
+    "ram_gb": 32,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.476,
+      "reserved_1yr": 0.29512,
+      "reserved_3yr": 0.20468,
+      "spot": 0.1428
+    }
+  },
+  {
+    "sku": "c2-standard-16",
+    "family": "c2-standard",
+    "category": "compute",
+    "vcpu": 16,
+    "ram_gb": 64,
+    "description": "Compute optimized",
+    "price_per_hour": {
+      "on_demand": 0.952,
+      "reserved_1yr": 0.59024,
+      "reserved_3yr": 0.40936,
+      "spot": 0.2856
+    }
+  },
+  {
+    "sku": "m1-megamem-96",
+    "family": "m1-megamem",
+    "category": "memory",
+    "vcpu": 96,
+    "ram_gb": 1433.6,
+    "description": "Extreme memory",
+    "price_per_hour": {
+      "on_demand": 10.674,
+      "reserved_1yr": 6.61788,
+      "reserved_3yr": 4.58982,
+      "spot": 3.2022
+    }
+  },
+  {
+    "sku": "m1-ultramem-40",
+    "family": "m1-ultramem",
+    "category": "memory",
+    "vcpu": 40,
+    "ram_gb": 961,
+    "description": "Ultra memory",
+    "price_per_hour": {
+      "on_demand": 5.312,
+      "reserved_1yr": 3.29344,
+      "reserved_3yr": 2.28416,
+      "spot": 1.5936
+    }
+  },
+  {
+    "sku": "a2-highgpu-1g",
+    "family": "a2-highgpu",
+    "category": "gpu",
+    "vcpu": 12,
+    "ram_gb": 85,
+    "description": "GPU accelerated",
+    "price_per_hour": {
+      "on_demand": 3.673,
+      "reserved_1yr": 2.27726,
+      "reserved_3yr": 1.57939,
+      "spot": 1.1019
+    }
+  },
+  {
+    "sku": "a2-highgpu-2g",
+    "family": "a2-highgpu",
+    "category": "gpu",
+    "vcpu": 24,
+    "ram_gb": 170,
+    "description": "GPU accelerated",
+    "price_per_hour": {
+      "on_demand": 7.346,
+      "reserved_1yr": 4.55452,
+      "reserved_3yr": 3.15878,
+      "spot": 2.2038
+    }
+  }
 ]

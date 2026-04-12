@@ -1,3 +1,5 @@
+import json
+import os
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -38,11 +40,38 @@ def calculate():
             "azure": azure_cost(**d),
             "gcp": gcp_cost(**d),
             "kubernetes": k8s_cost(**d),
-            "onprem": calculate_onprem_tco(**d)
+            "onprem": calculate_onprem_tco(
+                cpu=d["cpu"],
+                ram=d["ram"],
+                storage=d["storage"],
+                network=d["network"],
+                backup=d["backup"],
+            )
         })
     except Exception as e:
         logger.exception("Unexpected error in /calculate")
         return jsonify({"error": "internal server error"}), 500
+
+
+@app.route("/catalog", methods=["GET"])
+def get_catalog():
+    data_dir = os.path.join(os.path.dirname(__file__), "data")
+
+    with open(os.path.join(data_dir, "aws_catalog.json"), "r") as f:
+        aws = json.load(f)
+    with open(os.path.join(data_dir, "azure_catalog.json"), "r") as f:
+        azure = json.load(f)
+    with open(os.path.join(data_dir, "gcp_catalog.json"), "r") as f:
+        gcp = json.load(f)
+    with open(os.path.join(data_dir, "storage_rates.json"), "r") as f:
+        storage_rates = json.load(f)
+
+    return jsonify({
+        "aws": aws,
+        "azure": azure,
+        "gcp": gcp,
+        "storage_rates": storage_rates,
+    })
 
 
 if __name__ == "__main__":

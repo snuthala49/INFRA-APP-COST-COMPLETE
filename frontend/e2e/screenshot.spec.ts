@@ -12,7 +12,7 @@ test('take overview screenshot after calculate', async ({ page }) => {
   const dir = path.resolve(__dirname, '..', 'screenshots');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 
-  const main = page.locator('div.page-root');
+  const main = page.locator('body');
   await main.screenshot({ path: path.join(dir, 'overview.png'), animations: 'disabled' });
   expect(fs.existsSync(path.join(dir, 'overview.png'))).toBeTruthy();
 });

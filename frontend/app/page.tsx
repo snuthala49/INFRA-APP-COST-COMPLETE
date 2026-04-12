@@ -14,16 +14,24 @@ interface CostResult {
   total: number;
   note?: string;
   currency?: string;
+  pricing_model?: string;
+  instance_count?: number;
   breakdown?: { [k: string]: number };
   assumptions?: string;
   selected_instance?: {
+    sku?: string;
     type: string;
     vcpu: number;
     memory_gb: number;
+    count?: number;
+    price_per_hour?: number;
+    price_per_month?: number;
     category?: string;
     description?: string;
   };
 }
+
+type ProviderKey = "aws" | "azure" | "gcp";
 
 type TabKey = "product" | "about" | "contact";
 
@@ -33,6 +41,14 @@ export default function Home() {
   const [storage, setStorage] = useState(100);
   const [network, setNetwork] = useState(10);
   const [backup, setBackup] = useState(50);
+  const [selectedSkus, setSelectedSkus] = useState<Record<ProviderKey, string | null>>({ aws: null, azure: null, gcp: null });
+  const [pricingModel, setPricingModel] = useState<"on_demand" | "reserved_1yr" | "reserved_3yr" | "spot">("on_demand");
+  const [instanceCount, setInstanceCount] = useState(1);
+  const [storageTypes, setStorageTypes] = useState<Record<ProviderKey, string>>({
+    aws: "gp3",
+    azure: "standard_ssd",
+    gcp: "balanced_pd",
+  });
 
   const [results, setResults] = useState<CostResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,6 +77,18 @@ export default function Home() {
   };
 
   const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5000";
+  const pricingModelLabels: Record<string, string> = {
+    on_demand: "On-Demand",
+    reserved_1yr: "1-Yr Reserved",
+    reserved_3yr: "3-Yr Reserved",
+    spot: "Spot",
+  };
+  const providerOrder = ["aws", "azure", "gcp", "onprem", "kubernetes"] as const;
+  const normalizeProvider = (provider: string) => provider.toLowerCase().replace(/[^a-z]/g, "");
+  const providerIndex = (provider: string) => {
+    const idx = providerOrder.indexOf(normalizeProvider(provider) as (typeof providerOrder)[number]);
+    return idx === -1 ? providerOrder.length : idx;
+  };
 
   const handleCalculate = async () => {
     setLoading(true);
@@ -68,16 +96,30 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/calculate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cpu, ram, storage, network, backup }),
+        body: JSON.stringify({
+          cpu,
+          ram,
+          storage,
+          network,
+          backup,
+          aws_sku: selectedSkus.aws,
+          azure_sku: selectedSkus.azure,
+          gcp_sku: selectedSkus.gcp,
+          pricing_model: pricingModel,
+          instance_count: instanceCount,
+          aws_storage_type: storageTypes.aws,
+          azure_storage_type: storageTypes.azure,
+          gcp_storage_type: storageTypes.gcp,
+        }),
       });
       if (!res.ok) throw new Error("Backend error");
       const data = await res.json();
-      const arr = [data.aws, data.azure, data.gcp, data.kubernetes, data.onprem];
+      const arr = [data.aws, data.azure, data.gcp, data.onprem, data.kubernetes];
       const normalized = arr.map((r: any) => ({
         ...r,
         total: typeof r.total === "number" ? r.total : Number(r.total || 0),
         currency: r.currency || "USD",
-      })).sort((a: any, b: any) => a.total - b.total);
+      })).sort((a: any, b: any) => providerIndex(a.provider) - providerIndex(b.provider));
       setResults(normalized);
     } catch (err) {
       console.error(err);
@@ -94,19 +136,53 @@ export default function Home() {
       <section id="product" className="max-w-6xl mx-auto px-4 py-8 scroll-mt-16">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-1">
-            <OptionsPanel cpu={cpu} ram={ram} storage={storage} network={network} backup={backup} setCpu={setCpu} setRam={setRam} setStorage={setStorage} setNetwork={setNetwork} setBackup={setBackup} period={period} setPeriod={setPeriod} onCalculate={handleCalculate} loading={loading} />
+            <OptionsPanel
+              apiBase={API_BASE}
+              storage={storage}
+              network={network}
+              backup={backup}
+              instanceCount={instanceCount}
+              pricingModel={pricingModel}
+              selectedSkus={selectedSkus}
+              storageTypes={storageTypes}
+              setStorage={setStorage}
+              setNetwork={setNetwork}
+              setBackup={setBackup}
+              setInstanceCount={setInstanceCount}
+              setPricingModel={setPricingModel}
+              setSelectedSkus={setSelectedSkus}
+              setStorageTypes={setStorageTypes}
+              onWorkloadChange={(nextCpu, nextRam) => {
+                setCpu(nextCpu);
+                setRam(nextRam);
+              }}
+              period={period}
+              setPeriod={setPeriod}
+              onCalculate={handleCalculate}
+              loading={loading}
+            />
           </div>
 
           <div className="lg:col-span-3 bg-slate-900/65 border border-slate-800 rounded-2xl p-4">
             {results.length > 0 ? (
               <>
+                {(() => {
+                  const cheapestResult = results.reduce((min, current) =>
+                    current.total < min.total ? current : min
+                  );
+                  return (
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <div className="text-sm text-slate-400">Cheapest option</div>
-                    <div className="text-lg font-semibold text-cyan-300">{results[0].provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: results[0].currency}).format(results[0].total * periodMultiplier)}</div>
+                    <div className="text-lg font-semibold text-cyan-300">{cheapestResult.provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: cheapestResult.currency}).format(cheapestResult.total * periodMultiplier)}</div>
+                    <div className="text-xs text-slate-400 mt-1">
+                      {cheapestResult.selected_instance?.sku || cheapestResult.selected_instance?.type || "Smart Match"} • {pricingModelLabels[cheapestResult.pricing_model || pricingModel]}
+                    </div>
                   </div>
                   <div className="text-sm text-slate-400">Comparisons: {results.length}</div>
                 </div>
+                  );
+                })()}
 
                 <PricingTable results={results} multiplier={periodMultiplier} period={period} />
 
@@ -146,7 +222,17 @@ export default function Home() {
                     >
                       {results.map((r, idx) => (
                         <div key={idx} className="flex-shrink-0 basis-full sm:basis-1/2 snap-start">
-                          <ProviderCard provider={r.provider} total={Math.round(r.total * periodMultiplier * 100) / 100} currency={r.currency} breakdown={r.breakdown} cheapest={idx === 0} assumptions={r.assumptions} selected_instance={r.selected_instance} />
+                          <ProviderCard
+                            provider={r.provider}
+                            total={Math.round(r.total * periodMultiplier * 100) / 100}
+                            currency={r.currency}
+                            breakdown={r.breakdown}
+                            cheapest={r.total === Math.min(...results.map((x) => x.total))}
+                            assumptions={r.assumptions}
+                            selected_instance={r.selected_instance}
+                            pricing_model={r.pricing_model || pricingModel}
+                            instance_count={r.instance_count || instanceCount}
+                          />
                         </div>
                       ))}
                     </div>

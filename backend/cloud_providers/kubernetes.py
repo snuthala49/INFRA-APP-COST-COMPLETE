@@ -46,18 +46,26 @@ def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, **_):
     network_cost = network * network_rate
     backup_cost = backup * backup_rate
 
-    total = capex_monthly + power_cost + k8s_overhead + network_cost + backup_cost
+    breakdown = {
+        "cpu": round(capex_monthly, 2),
+        "ram": round(power_cost, 2),
+        "storage": round(k8s_overhead, 2),
+        "network": round(network_cost, 2),
+        "backup": round(backup_cost, 2),
+    }
+    total = round(sum(breakdown.values()), 2)
 
     return {
         "provider": "kubernetes",
-        "total": round(total, 2),
+        "total": total,
         "currency": "USD",
-        "assumptions": "K8s neutral on-prem baseline: 60–70% target util (65%), 40–50% real util (45%), 3-year amort, 1.5x redundancy, $0.12/kWh, network $0.04/Mbps, backup $0.02/GB",
-        "breakdown": {
-            "cpu": round(capex_monthly, 2),
-            "ram": round(power_cost, 2),
-            "storage": round(k8s_overhead, 2),
-            "network": round(network_cost, 2),
-            "backup": round(backup_cost, 2),
+        "selected_instance": {
+            "type": "K8s workload baseline",
+            "vcpu": round(effective_cpu, 2),
+            "memory_gb": round(effective_ram, 2),
+            "category": "cluster",
+            "description": f"Scaled from requested {cpu} vCPU / {ram} GB RAM at 45% real utilization",
         },
+        "assumptions": "K8s neutral on-prem baseline: 60–70% target util (65%), 40–50% real util (45%), 3-year amort, 1.5x redundancy, $0.12/kWh, network $0.04/Mbps, backup $0.02/GB",
+        "breakdown": breakdown,
     }

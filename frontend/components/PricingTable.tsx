@@ -64,14 +64,14 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
     }
     
     if (row === 'vCPU') {
-      if ((p === 'kubernetes' || p === 'onprem') && !r.selected_instance?.vcpu) {
+      if (p === 'kubernetes' || p === 'onprem') {
         return 'Scaled to workload';
       }
       return r.selected_instance?.vcpu ?? '-';
     }
     
     if (row === 'RAM (GB)') {
-      if ((p === 'kubernetes' || p === 'onprem') && !r.selected_instance?.memory_gb) {
+      if (p === 'kubernetes' || p === 'onprem') {
         return 'Scaled to workload';
       }
       return r.selected_instance?.memory_gb ?? '-';

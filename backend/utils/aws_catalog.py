@@ -2,6 +2,13 @@ import json
 import os
 
 
+def _hourly_price(entry):
+    rate = entry.get("price_per_hour", 0)
+    if isinstance(rate, dict):
+        return rate.get("on_demand", 0)
+    return rate
+
+
 def load_aws_catalog():
     """Load AWS instance SKUs from JSON catalog."""
     catalog_path = os.path.join(
@@ -45,7 +52,7 @@ def find_best_fit(cpu, ram):
                 "family": sku["family"],
                 "vcpu": sku["vcpu"],
                 "ram_gb": sku["ram_gb"],
-                "price_per_hour": sku["price_per_hour"],
+                "price_per_hour": _hourly_price(sku),
                 "count": 1,
             }
 
@@ -57,7 +64,7 @@ def find_best_fit(cpu, ram):
         "family": largest["family"],
         "vcpu": largest["vcpu"],
         "ram_gb": largest["ram_gb"],
-        "price_per_hour": largest["price_per_hour"],
+        "price_per_hour": _hourly_price(largest),
         "count": count,
     }
 

@@ -84,6 +84,13 @@ def calculate_onprem_tco(
         "capex_monthly": round(capex_monthly, 2),
         "opex_monthly": round(opex_monthly, 2),
         "currency": "USD",
+        "selected_instance": {
+            "type": "On-prem workload baseline",
+            "vcpu": cpu,
+            "memory_gb": ram,
+            "category": "onprem",
+            "description": "Modeled from requested workload inputs",
+        },
         "assumptions": (
             "Executive TCO: 4yr amortization, 1.4x redundancy, $0.10/kWh, "
             "PUE 1.5, facilities 15%, ops 25% annually, "

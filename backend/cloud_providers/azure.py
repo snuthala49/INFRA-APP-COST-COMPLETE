@@ -1,10 +1,27 @@
-from .azure_matcher import get_matcher
+from .catalog_pricing import calculate_provider_cost
 
-def azure_cost(cpu=0, ram=0, storage=0, network=0, backup=0, **_):
-    """Azure pricing using real VM instance types and pricing.
-    
-    Uses Azure instance matcher to select appropriate VM size based on 
-    CPU and RAM requirements, then calculates realistic costs.
-    """
-    matcher = get_matcher()
-    return matcher.calculate_costs(cpu, ram, storage, network, backup)
+
+def azure_cost(
+    cpu=0,
+    ram=0,
+    storage=0,
+    network=0,
+    backup=0,
+    azure_sku=None,
+    pricing_model="on_demand",
+    instance_count=1,
+    azure_storage_type="standard_ssd",
+    **_,
+):
+    return calculate_provider_cost(
+        provider="azure",
+        cpu=cpu,
+        ram=ram,
+        storage=storage,
+        network=network,
+        backup=backup,
+        sku=azure_sku,
+        pricing_model=pricing_model,
+        instance_count=instance_count,
+        storage_type=azure_storage_type,
+    )

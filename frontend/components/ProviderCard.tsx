@@ -5,13 +5,18 @@ interface Props {
   provider: string;
   total: number | string;
   currency?: string;
+  pricing_model?: string;
+  instance_count?: number;
   breakdown?: { [k: string]: number };
   cheapest?: boolean;
   assumptions?: string;
   selected_instance?: {
+    sku?: string;
     type: string;
     vcpu: number;
     memory_gb: number;
+    count?: number;
+    price_per_month?: number;
     category?: string;
     description?: string;
   };
@@ -25,8 +30,14 @@ const colors: { [k: string]: string } = {
   onprem: "from-stone-200 to-stone-300 text-gray-900",
 };
 
-const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, cheapest, assumptions, selected_instance }) => {
+const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_model, instance_count = 1, breakdown, cheapest, assumptions, selected_instance }) => {
   const [open, setOpen] = useState(false);
+  const pricingLabel: Record<string, string> = {
+    on_demand: 'On-Demand',
+    reserved_1yr: '1-Yr Reserved — 38% off On-Demand',
+    reserved_3yr: '3-Yr Reserved — 57% off On-Demand',
+    spot: 'Spot — 70% off On-Demand',
+  };
   const fmt = (v: number) => {
     try {
       if (!currency) return v.toString();
@@ -76,6 +87,37 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
       </svg>
     ),
   };
+  const metricChips = (() => {
+    if (!breakdown) return [] as Array<{ label: string; value: number | undefined }>;
+
+    if (p === 'onprem') {
+      return [
+        { label: 'CapEx', value: breakdown.capex },
+        { label: 'Power', value: breakdown.power },
+        { label: 'Facilities', value: breakdown.facilities },
+        { label: 'Operations', value: breakdown.operations },
+        { label: 'Network', value: breakdown.network },
+        { label: 'Backup', value: breakdown.backup },
+      ];
+    }
+
+    if (p === 'kubernetes') {
+      return [
+        { label: 'CPU Infra', value: breakdown.cpu },
+        { label: 'RAM Infra', value: breakdown.ram },
+        { label: 'Cluster Ops', value: breakdown.storage },
+        { label: 'Network', value: breakdown.network },
+        { label: 'Backup', value: breakdown.backup },
+      ];
+    }
+
+    return [
+      { label: 'Compute', value: breakdown.compute ?? breakdown.instance ?? breakdown.cpu },
+      { label: 'Storage', value: breakdown.storage },
+      { label: 'Network', value: breakdown.network },
+      { label: 'Backup', value: breakdown.backup },
+    ];
+  })();
 
   try {
     return (
@@ -90,13 +132,17 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
             </div>
             <div>
               <div className="plan-name">{provider}</div>
+              {pricing_model ? <div className="inline-flex mt-1 text-[11px] px-2 py-0.5 rounded-full border border-cyan-400/40 bg-cyan-400/10 text-cyan-300">{pricingLabel[pricing_model] || pricing_model}</div> : null}
               {selected_instance ? (
                 <div className="text-xs text-slate-600 font-mono">
-                  {selected_instance.type} • {selected_instance.vcpu} vCPU • {selected_instance.memory_gb} GB RAM
+                  {p === 'kubernetes' || p === 'onprem'
+                    ? (selected_instance.type || 'Workload baseline')
+                    : `${(selected_instance.sku || selected_instance.type)} • ${selected_instance.vcpu} vCPU • ${selected_instance.memory_gb} GB RAM`}
                 </div>
               ) : (
                 <div className="price-sub">per month • estimated</div>
               )}
+              {instance_count > 1 ? <div className="text-xs text-slate-600">Instance Count: {instance_count}</div> : null}
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -113,7 +159,13 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
         <div className="mt-3 flex items-end justify-between">
           <div>
             <div className="price-large">{currency ? new Intl.NumberFormat(undefined, {style:'currency', currency}).format(Number(total)) : String(total)}</div>
-            <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
+            {instance_count > 1 && selected_instance?.price_per_month ? (
+              <div className="text-sm text-gray-500 mt-1">
+                {fmt(Number(selected_instance.price_per_month))}/instance × {instance_count} = {fmt(Number(total))}/month
+              </div>
+            ) : (
+              <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
+            )}
           </div>
           <div className="w-20 h-20 rounded-md overflow-hidden relative flex items-center justify-center">
             <img src={`/assets/${p}.svg`} alt={`${provider} logo`} className="provider-img object-contain" />
@@ -121,19 +173,12 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, breakdown, c
         </div>
 
         <div className="mt-4 flex gap-2 flex-wrap">
-          {[
-            { label: 'Compute', key: 'compute' },
-            { label: 'Storage', key: 'storage' },
-            { label: 'Network', key: 'network' },
-            { label: 'Backup', key: 'backup' },
-          ].map(({ label, key }) => {
-            if (!breakdown) return null;
-            const rawValue = key === 'compute' ? (breakdown[key] ?? breakdown.cpu) : breakdown[key];
-            if (rawValue === undefined) return null;
+          {metricChips.map(({ label, value }) => {
+            if (value === undefined) return null;
             return (
-              <div key={key} className="stat-chip">
+              <div key={label} className="stat-chip">
                 <div className="stat-key">{label}</div>
-                <div className="stat-val">{fmt(Number(rawValue))}</div>
+                <div className="stat-val">{fmt(Number(value))}</div>
               </div>
             );
           })}
