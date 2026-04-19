@@ -161,10 +161,10 @@ const OptionsPanel: React.FC<Props> = ({
               key={provider}
               type="button"
               onClick={() => setActiveProvider(provider)}
-              className={`pb-2 px-1 text-sm font-semibold uppercase tracking-wide border-b-2 ${
+              className={`pb-2 px-1 text-sm font-bold uppercase tracking-wide border-b-2 ${
                 activeProvider === provider
-                  ? "text-cyan-300 border-cyan-400"
-                  : "text-slate-400 border-transparent hover:text-slate-200"
+                  ? "text-black border-black"
+                  : "text-black border-transparent hover:text-black"
               }`}
             >
               {provider}
