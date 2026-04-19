@@ -37,6 +37,8 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
     reserved_1yr: '1-Yr Reserved — 38% off On-Demand',
     reserved_3yr: '3-Yr Reserved — 57% off On-Demand',
     spot: 'Spot — 70% off On-Demand',
+    baseline: 'Baseline (TCO)',
+    onprem_k8s: 'Baseline (TCO)',
   };
   const fmt = (v: number) => {
     try {
@@ -103,9 +105,11 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
 
     if (p === 'kubernetes') {
       return [
-        { label: 'CPU Infra', value: breakdown.cpu },
-        { label: 'RAM Infra', value: breakdown.ram },
-        { label: 'Cluster Ops', value: breakdown.storage },
+        { label: 'CapEx', value: breakdown.capex },
+        { label: 'Power', value: breakdown.power },
+        { label: 'Facilities', value: breakdown.facilities },
+        { label: 'Operations', value: breakdown.operations },
+        { label: 'K8s Overhead', value: breakdown.k8s_overhead },
         { label: 'Network', value: breakdown.network },
         { label: 'Backup', value: breakdown.backup },
       ];
@@ -136,7 +140,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
               {selected_instance ? (
                 <div className="text-xs text-slate-600 font-mono">
                   {p === 'kubernetes' || p === 'onprem'
-                    ? (selected_instance.type || 'Workload baseline')
+                    ? `${selected_instance.type || 'Workload baseline'} • ${selected_instance.vcpu} vCPU • ${selected_instance.memory_gb} GB RAM`
                     : `${(selected_instance.sku || selected_instance.type)} • ${selected_instance.vcpu} vCPU • ${selected_instance.memory_gb} GB RAM`}
                 </div>
               ) : (

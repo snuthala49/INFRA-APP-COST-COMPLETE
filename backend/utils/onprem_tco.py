@@ -4,28 +4,34 @@ def calculate_onprem_tco(
     storage=0,
     network=0,   # Mbps
     backup=0,    # GB
+    instance_count=1,
 ):
     """
     Executive-level On-Prem TCO model (finance-grade).
 
     Assumptions:
-    - 4-year amortization
+    - 5-year amortization
     - 1.4x redundancy (HA + buffer)
-    - $0.10/kWh power cost
-    - PUE 1.5
+    - $0.12/kWh power cost
+    - PUE 1.56
     - Includes facilities + operations
     """
 
-    # ---- Core assumptions ----
-    amort_years = 4
-    redundancy = 1.4
-    power_rate = 0.10  # $/kWh
-    pue = 1.5
+    try:
+        count = max(int(instance_count), 1)
+    except (TypeError, ValueError):
+        count = 1
 
-    # ---- CapEx unit costs (realistic enterprise blended) ----
-    capex_per_vcpu = 150.0
-    capex_per_gb_ram = 10.0
-    capex_per_gb_storage = 0.05
+    # ---- Core assumptions ----
+    amort_years = 5
+    redundancy = 1.4
+    power_rate = 0.12  # $/kWh
+    pue = 1.56
+
+    # ---- CapEx unit costs (Gartner-aligned enterprise blended) ----
+    capex_per_vcpu = 500.0
+    capex_per_gb_ram = 25.0
+    capex_per_gb_storage = 0.15
 
     # ---- Power model (blended per compute unit) ----
     watts_per_vcpu = 5.0
@@ -55,27 +61,43 @@ def calculate_onprem_tco(
     # ---- Facilities (15% of CapEx monthly) ----
     facilities_cost = 0.15 * capex_monthly
 
-    # ---- Operations (25% annually of CapEx → monthly) ----
-    ops_cost = (0.25 * capex_total / 12) * redundancy
+    # ---- Operations (35% annually of CapEx → monthly) ----
+    ops_cost = (0.35 * capex_total / 12)
 
-    # ---- Network (normalized to cloud-style transfer model) ----
-    # Convert sustained Mbps to estimated monthly GB transfer for apples-to-apples comparison
-    monthly_gb_transfer = network * 3600 * 24 * 30 / 8 / 1024
-    network_rate_per_gb = 0.03  # $ per GB / month (enterprise blended WAN/transit baseline)
-    network_cost = monthly_gb_transfer * network_rate_per_gb
+    # ---- Hardware maintenance / support (12% annually of CapEx → monthly) ----
+    maintenance_cost = 0.12 * capex_total / 12
+
+    # ---- Software licensing: OS + hypervisor + monitoring ----
+    software_licensing_cost = (cpu * 100.0) / 12
+
+    # ---- Network ($0.02/GB egress — conservative middle ground) ----
+    monthly_gb_transfer = network * 324  # Mbps → GB/month (Mbps × 3600×24×30 / 8 / 1024 / 1024 / 1024)
+    network_cost = monthly_gb_transfer * 0.02
 
     # ---- Backup / DR ----
     backup_rate = 0.03  # $ per GB / month
     backup_cost = backup * backup_rate
 
-    # ---- OpEx + Total ----
-    opex_monthly = (
+    # ---- OpEx + Total (single workload baseline) ----
+    opex_single = (
         power_cost
         + facilities_cost
         + ops_cost
+        + maintenance_cost
+        + software_licensing_cost
         + network_cost
         + backup_cost
     )
+    capex_monthly *= count
+    power_cost *= count
+    facilities_cost *= count
+    ops_cost *= count
+    maintenance_cost *= count
+    software_licensing_cost *= count
+    network_cost *= count
+    backup_cost *= count
+
+    opex_monthly = opex_single * count
     total = capex_monthly + opex_monthly
 
     return {
@@ -83,24 +105,29 @@ def calculate_onprem_tco(
         "total": round(total, 2),
         "capex_monthly": round(capex_monthly, 2),
         "opex_monthly": round(opex_monthly, 2),
+        "instance_count": count,
         "currency": "USD",
         "selected_instance": {
             "type": "On-prem workload baseline",
             "vcpu": cpu,
             "memory_gb": ram,
+            "count": count,
             "category": "onprem",
             "description": "Modeled from requested workload inputs",
         },
         "assumptions": (
-            "Executive TCO: 4yr amortization, 1.4x redundancy, $0.10/kWh, "
-            "PUE 1.5, facilities 15%, ops 25% annually, "
-            "network converted Mbps→GB at $0.03/GB, backup $0.03/GB"
+            "Per Garnter (Gartner-aligned) Executive TCO: 5yr amortization, 1.4x redundancy, $0.12/kWh, "
+            "PUE 1.56, CapEx: $500/vCPU (hw+OS+support), $25/GB RAM, $0.15/GB storage, "
+            "facilities 15%, ops 35% annually, maintenance 12% annually, software licensing $100/vCPU/year, "
+            "network $0.02/GB egress (Mbps→GB/month), backup $0.03/GB"
         ),
         "breakdown": {
             "capex": round(capex_monthly, 2),
             "power": round(power_cost, 2),
             "facilities": round(facilities_cost, 2),
             "operations": round(ops_cost, 2),
+            "maintenance": round(maintenance_cost, 2),
+            "software_licensing": round(software_licensing_cost, 2),
             "network": round(network_cost, 2),
             "backup": round(backup_cost, 2),
         },

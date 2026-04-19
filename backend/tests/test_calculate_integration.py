@@ -10,7 +10,7 @@ from app import app
 def test_calculate_endpoint_returns_expected_structure():
     client = app.test_client()
     payload = {"cpu": 2, "ram": 8, "storage": 100, "network": 10, "backup": 50}
-    res = client.post("/calculate", json=payload)
+    res = client.post("/api/calculate", json=payload)
     assert res.status_code == 200
     data = res.get_json()
     # Ensure providers exist and AWS has a positive total

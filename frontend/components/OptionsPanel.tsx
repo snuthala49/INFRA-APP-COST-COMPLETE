@@ -203,7 +203,7 @@ const OptionsPanel: React.FC<Props> = ({
         />
 
         <InputField label="Storage (GB)" value={storage} onChange={setStorage} />
-        <InputField label="Network (GB)" value={network} onChange={setNetwork} />
+        <InputField label="Network (Mbps)" value={network} onChange={setNetwork} />
         <InputField label="Backup (GB)" value={backup} onChange={setBackup} />
         <InputField label="Instance Count" value={instanceCount} onChange={(value) => setInstanceCount(Math.max(1, Math.min(500, value)))} />
       </div>

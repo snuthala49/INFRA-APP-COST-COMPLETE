@@ -14,7 +14,7 @@ const StorageTypeSelector: React.FC<StorageTypeSelectorProps> = ({ provider, sel
 
   return (
     <div>
-      <label className="block text-xs text-slate-300 mb-1">Storage type</label>
+      <label className="block text-xs font-semibold text-slate-800 mb-1">Storage type</label>
       <select
         aria-label={`${provider.toUpperCase()} storage type`}
         value={selectedType}

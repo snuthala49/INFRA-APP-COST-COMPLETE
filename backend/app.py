@@ -54,6 +54,7 @@ def calculate():
                 storage=d["storage"],
                 network=d["network"],
                 backup=d["backup"],
+                instance_count=d["instance_count"],
             )
         })
     except Exception as e:

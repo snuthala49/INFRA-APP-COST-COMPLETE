@@ -92,7 +92,7 @@ const InstanceSelector: React.FC<InstanceSelectorProps> = ({ provider, catalog, 
       </div>
 
       <div>
-        <label className="block text-xs text-slate-300 mb-1">Instance family</label>
+        <label className="block text-xs font-semibold text-slate-800 mb-1">Instance family</label>
         <select
           aria-label={`${provider.toUpperCase()} family`}
           value={selectedFamily}
@@ -113,7 +113,7 @@ const InstanceSelector: React.FC<InstanceSelectorProps> = ({ provider, catalog, 
       </div>
 
       <div>
-        <label className="block text-xs text-slate-300 mb-1">Specific SKU</label>
+        <label className="block text-xs font-semibold text-slate-800 mb-1">Specific SKU</label>
         <select
           aria-label={`${provider.toUpperCase()} SKU`}
           value={selectedSku || ""}
@@ -129,15 +129,15 @@ const InstanceSelector: React.FC<InstanceSelectorProps> = ({ provider, catalog, 
         </select>
       </div>
 
-      <div className="rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-xs text-slate-300">
+      <div className="rounded-md border border-slate-700 bg-slate-800/80 px-3 py-2 text-xs text-slate-200">
         {selectedEntry ? (
           <div className="flex flex-wrap gap-3">
-            <span>{selectedEntry.vcpu} vCPU</span>
-            <span>{selectedEntry.ram_gb} GB RAM</span>
-            <span>${monthlyPrice.toFixed(2)}/month</span>
+            <span className="text-slate-100 font-medium">{selectedEntry.vcpu} vCPU</span>
+            <span className="text-slate-100 font-medium">{selectedEntry.ram_gb} GB RAM</span>
+            <span className="text-cyan-300 font-medium">${monthlyPrice.toFixed(2)}/month</span>
           </div>
         ) : (
-          <span>Smart matcher mode enabled for {provider.toUpperCase()}.</span>
+          <span className="text-slate-200 italic">Smart matcher mode enabled for {provider.toUpperCase()}.</span>
         )}
       </div>
     </div>

@@ -13,4 +13,6 @@ def test_kubernetes_cost_positive_and_structure():
     assert r["provider"] == "kubernetes"
     assert "total" in r and isinstance(r["total"], (int, float))
     assert r["total"] > 0
+    assert "maintenance" in r["breakdown"]
+    assert "software_licensing" in r["breakdown"]
     assert round(sum(r["breakdown"].values()), 2) == r["total"]

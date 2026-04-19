@@ -82,6 +82,7 @@ export default function Home() {
     reserved_1yr: "1-Yr Reserved",
     reserved_3yr: "3-Yr Reserved",
     spot: "Spot",
+    baseline: "Baseline (TCO)",
   };
   const providerOrder = ["aws", "azure", "gcp", "onprem", "kubernetes"] as const;
   const normalizeProvider = (provider: string) => provider.toLowerCase().replace(/[^a-z]/g, "");
@@ -170,13 +171,16 @@ export default function Home() {
                   const cheapestResult = results.reduce((min, current) =>
                     current.total < min.total ? current : min
                   );
+                  const cheapestPricingModel = ["kubernetes", "onprem"].includes(cheapestResult.provider.toLowerCase())
+                    ? "baseline"
+                    : (cheapestResult.pricing_model || pricingModel);
                   return (
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <div className="text-sm text-slate-400">Cheapest option</div>
                     <div className="text-lg font-semibold text-cyan-300">{cheapestResult.provider} — {new Intl.NumberFormat(undefined, {style:'currency', currency: cheapestResult.currency}).format(cheapestResult.total * periodMultiplier)}</div>
                     <div className="text-xs text-slate-400 mt-1">
-                      {cheapestResult.selected_instance?.sku || cheapestResult.selected_instance?.type || "Smart Match"} • {pricingModelLabels[cheapestResult.pricing_model || pricingModel]}
+                      {cheapestResult.selected_instance?.sku || cheapestResult.selected_instance?.type || "Smart Match"} • {pricingModelLabels[cheapestPricingModel]}
                     </div>
                   </div>
                   <div className="text-sm text-slate-400">Comparisons: {results.length}</div>
@@ -230,7 +234,11 @@ export default function Home() {
                             cheapest={r.total === Math.min(...results.map((x) => x.total))}
                             assumptions={r.assumptions}
                             selected_instance={r.selected_instance}
-                            pricing_model={r.pricing_model || pricingModel}
+                            pricing_model={
+                              ["kubernetes", "onprem"].includes(r.provider.toLowerCase())
+                                ? "baseline"
+                                : (r.pricing_model || pricingModel)
+                            }
                             instance_count={r.instance_count || instanceCount}
                           />
                         </div>
