@@ -69,6 +69,15 @@ python3 -m utils.database_price_sync --aws-region us-east-1 --azure-region eastu
 
 Database estimates include only selected rate lines; they do not infer workload quantities or silently invent missing prices. Always review the source, effective date, unit, region, and provider sync status shown with the estimate.
 
+## Search and Social Discovery
+
+- The site uses `https://www.infracostiq.com/` as its canonical URL and serves `/robots.txt`, `/sitemap.xml`, `/opengraph-image`, and `/indexnow-key.txt`.
+- To verify Google Search Console, create a **Domain** property, add Google's TXT record in GoDaddy DNS, and wait for DNS propagation. Optionally set `GOOGLE_SITE_VERIFICATION` to the HTML-tag token before building the frontend.
+- To verify Bing Webmaster Tools, import the verified Google Search Console property or use Bing's DNS verification record in GoDaddy. Optionally set `BING_SITE_VERIFICATION` to Bing's HTML-tag token before building the frontend.
+- Submit `https://www.infracostiq.com/sitemap.xml` in both consoles. After deployment, inspect the homepage and check indexing/coverage reports; sitemap submission is a discovery hint, not an indexing guarantee.
+- IndexNow uses the public key file at `/indexnow-key.txt`. To notify IndexNow after publishing, set `INDEXNOW_URLS` to a comma-separated list of fully qualified URLs and run `npm run indexnow:submit` from `frontend/`. The command is opt-in and does not run during builds.
+- Keep `www.infracostiq.com` as the single canonical host. Configure a permanent redirect from the apex `infracostiq.com` to `www.infracostiq.com` at the hosting layer if both hosts resolve.
+
 ## Frontend - Development & Local Testing 🖥️
 
 1. Configure the API URL (optional - defaults to http://127.0.0.1:5000):
