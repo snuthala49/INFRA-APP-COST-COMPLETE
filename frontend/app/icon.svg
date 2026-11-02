@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14d99a" />
+      <stop offset="1" stop-color="#00a86b" />
+    </linearGradient>
+    <clipPath id="diamond">
+      <path d="M50 0 100 50 50 100 0 50Z" />
+    </clipPath>
+  </defs>
+  <path d="M50 0 100 50 50 100 0 50Z" fill="url(#mark)" />
+  <g clip-path="url(#diamond)" fill="#fff" font-family="Arial,Helvetica,sans-serif" font-weight="700">
+    <text x="49" y="64" text-anchor="middle" font-size="38">IQ</text>
+    <text x="76" y="31" text-anchor="middle" font-size="15">$</text>
+  </g>
+</svg>

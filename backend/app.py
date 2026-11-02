@@ -11,8 +11,10 @@ from cloud_providers.azure import azure_cost
 from cloud_providers.gcp import gcp_cost
 from cloud_providers.kubernetes import k8s_cost
 from cloud_providers.catalog_pricing import load_price_provenance
+from cloud_providers.databases import calculate_database_quote, get_database_rate_catalog
 from utils.onprem_tco import calculate_onprem_tco
-from schemas import CalcPayload
+from utils.database_price_sync import DATABASE_SERVICES, load_database_price_cache
+from schemas import CalcPayload, DatabaseEstimatePayload
 
 app = Flask(__name__)
 CORS(app)
@@ -39,7 +41,7 @@ def calculate():
         payload = CalcPayload(**(request.json or {}))
     except ValidationError as e:
         logger.debug("Validation error: %s", e)
-        return jsonify({"error": "invalid input", "details": e.errors()}), 400
+        return jsonify({"error": "invalid input", "details": e.errors(include_context=False, include_url=False)}), 400
 
     d = payload.model_dump()
 
@@ -55,6 +57,9 @@ def calculate():
                 storage=d["storage"],
                 network_ingress_gb_month=d["network_ingress_gb_month"],
                 network_egress_gb_month=d["network_egress_gb_month"],
+                network_cross_region_gb_month=d["network_cross_region_gb_month"],
+                network_source_region=d["network_source_region"],
+                network_destination_region=d["network_destination_region"],
                 backup=d["backup"],
                 instance_count=d["instance_count"],
             )
@@ -87,6 +92,50 @@ def get_catalog():
         "storage_rates": storage_rates,
         "price_provenance": load_price_provenance(),
     })
+
+
+@app.route("/api/database/catalog", methods=["GET"])
+def get_database_catalog():
+    catalog = load_database_price_cache()
+    if not catalog.get("records"):
+        return jsonify({
+            "error": "Database prices have not been synced",
+            "providers": catalog.get("providers", {}),
+        }), 503
+
+    provider = request.args.get("provider")
+    service = request.args.get("service")
+    region = request.args.get("region")
+    component = request.args.get("component")
+    search = request.args.get("search")
+    try:
+        limit = int(request.args.get("limit", "250"))
+    except ValueError:
+        return jsonify({"error": "limit must be an integer"}), 400
+    if not all((provider, service, region)):
+        return jsonify({
+            "updated_at": catalog.get("updated_at"),
+            "providers": catalog.get("providers", {}),
+            "services": DATABASE_SERVICES,
+        })
+
+    try:
+        return jsonify(get_database_rate_catalog(catalog, provider, service, region, component, search, limit))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
+
+
+@app.route("/api/database/calculate", methods=["POST"])
+def calculate_database():
+    try:
+        payload = DatabaseEstimatePayload(**(request.get_json(silent=True) or {}))
+    except ValidationError as e:
+        return jsonify({"error": "invalid input", "details": e.errors(include_context=False, include_url=False)}), 400
+
+    try:
+        return jsonify(calculate_database_quote(payload.model_dump(), load_database_price_cache()))
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 422
 
 
 @app.route("/api/contact", methods=["POST"])

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import ProviderCard from "../components/ProviderCard";
 import OptionsPanel from "../components/OptionsPanel";
 import PricingTable from "../components/PricingTable";
+import DatabaseCostingPanel from "../components/DatabaseCostingPanel";
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import AboutSection from "../components/AboutSection";
@@ -47,6 +48,9 @@ export default function Home() {
   const [storage, setStorage] = useState(100);
   const [networkIngress, setNetworkIngress] = useState(0);
   const [networkEgress, setNetworkEgress] = useState(3240);
+  const [networkCrossRegion, setNetworkCrossRegion] = useState(0);
+  const [networkSourceRegion, setNetworkSourceRegion] = useState("");
+  const [networkDestinationRegion, setNetworkDestinationRegion] = useState("");
   const [backup, setBackup] = useState(50);
   const [selectedSkus, setSelectedSkus] = useState<Record<ProviderKey, string | null>>({ aws: null, azure: null, gcp: null });
   const [pricingModel, setPricingModel] = useState<"on_demand" | "reserved_1yr" | "reserved_3yr" | "spot">("on_demand");
@@ -112,6 +116,9 @@ export default function Home() {
           storage,
           network_ingress_gb_month: networkIngress,
           network_egress_gb_month: networkEgress,
+          network_cross_region_gb_month: networkCrossRegion,
+          network_source_region: networkSourceRegion,
+          network_destination_region: networkDestinationRegion,
           backup,
           aws_sku: selectedSkus.aws,
           azure_sku: selectedSkus.azure,
@@ -155,6 +162,9 @@ export default function Home() {
               storage={storage}
               networkIngress={networkIngress}
               networkEgress={networkEgress}
+              networkCrossRegion={networkCrossRegion}
+              networkSourceRegion={networkSourceRegion}
+              networkDestinationRegion={networkDestinationRegion}
               backup={backup}
               instanceCount={instanceCount}
               pricingModel={pricingModel}
@@ -165,6 +175,9 @@ export default function Home() {
               setStorage={setStorage}
               setNetworkIngress={setNetworkIngress}
               setNetworkEgress={setNetworkEgress}
+              setNetworkCrossRegion={setNetworkCrossRegion}
+              setNetworkSourceRegion={setNetworkSourceRegion}
+              setNetworkDestinationRegion={setNetworkDestinationRegion}
               setBackup={setBackup}
               setInstanceCount={setInstanceCount}
               setPricingModel={setPricingModel}
@@ -274,6 +287,7 @@ export default function Home() {
         </div>
       </section>
 
+      <DatabaseCostingPanel apiBase={API_BASE} />
       <AboutSection />
       <ContactSection />
       <Footer />

@@ -4,9 +4,12 @@ def calculate_onprem_tco(
     storage=0,
     network_ingress_gb_month=0,
     network_egress_gb_month=0,
+    network_cross_region_gb_month=0,
     backup=0,    # GB
     instance_count=1,
     network=None,
+    network_source_region=None,
+    network_destination_region=None,
 ):
     """
     Executive-level On-Prem TCO model (finance-grade).
@@ -76,6 +79,7 @@ def calculate_onprem_tco(
     if network is not None and not network_egress_gb_month:
         network_egress_gb_month = float(network) * 324
     network_cost = max(float(network_egress_gb_month), 0.0) * 0.02
+    cross_region_cost = max(float(network_cross_region_gb_month), 0.0) * 0.02
 
     # ---- Backup / DR ----
     backup_rate = 0.03  # $ per GB / month
@@ -89,6 +93,7 @@ def calculate_onprem_tco(
         + maintenance_cost
         + software_licensing_cost
         + network_cost
+        + cross_region_cost
         + backup_cost
     )
     opex_monthly = opex_single
@@ -113,7 +118,7 @@ def calculate_onprem_tco(
             "Per Garnter (Gartner-aligned) Executive TCO: 5yr amortization, 1.4x redundancy, $0.12/kWh, "
             "PUE 1.56, CapEx: $500/vCPU (hw+OS+support), $25/GB RAM, $0.15/GB storage, "
             "facilities 15%, ops 35% annually, maintenance 12% annually, software licensing $100/vCPU/year, "
-            "network egress $0.02/GB-month, backup $0.03/GB-month. CPU/RAM are per instance; storage, network, and backup are scenario totals."
+            "network egress and cross-region transfer $0.02/GB-month, backup $0.03/GB-month. CPU/RAM are per instance; storage, network, and backup are scenario totals."
         ),
         "breakdown": {
             "capex": round(capex_monthly, 2),
@@ -123,8 +128,14 @@ def calculate_onprem_tco(
             "maintenance": round(maintenance_cost, 2),
             "software_licensing": round(software_licensing_cost, 2),
             "network_egress": round(network_cost, 2),
+            "network_cross_region": round(cross_region_cost, 2),
             "network_ingress": 0.0,
             "backup": round(backup_cost, 2),
         },
         "price_provenance": {"source": "Static infrastructure assumptions", "region": None, "region_status": "not applicable to on-premises", "last_updated": None},
+        "network_transfer": {
+            "source_region": network_source_region,
+            "destination_region": network_destination_region,
+            "cross_region_gb_month": round(float(network_cross_region_gb_month), 2),
+        },
     }
