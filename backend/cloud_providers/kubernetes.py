@@ -1,4 +1,4 @@
-def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress_gb_month=0, backup=0, instance_count=1, network=None, **_):
+def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress_gb_month=0, network_cross_region_gb_month=0, network_source_region=None, network_destination_region=None, backup=0, instance_count=1, network=None, **_):
     """Neutral on-prem Kubernetes baseline model.
 
     Assumptions:
@@ -58,6 +58,7 @@ def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress
     if network is not None and not network_egress_gb_month:
         network_egress_gb_month = float(network) * 324
     network_cost = max(float(network_egress_gb_month), 0.0) * 0.03
+    cross_region_cost = max(float(network_cross_region_gb_month), 0.0) * 0.03
     backup_cost = backup * backup_rate
 
     breakdown = {
@@ -69,6 +70,7 @@ def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress
         "software_licensing": round(software_licensing_cost, 2),
         "k8s_overhead": round(k8s_overhead, 2),
         "network_egress": round(network_cost, 2),
+        "network_cross_region": round(cross_region_cost, 2),
         "network_ingress": 0.0,
         "backup": round(backup_cost, 2),
     }
@@ -90,7 +92,12 @@ def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress
             "provisioned_vcpu": round(effective_cpu, 2),
             "provisioned_memory_gb": round(effective_ram, 2),
         },
-        "assumptions": "Kubernetes infrastructure baseline: 45% real utilization, 5-year amortization, 1.5x redundancy, $0.12/kWh, PUE 1.56, monthly network egress at $0.03/GB, backup at $0.02/GB. Storage, network, and backup are scenario totals; CPU and RAM are per instance.",
+        "assumptions": "Kubernetes infrastructure baseline: 45% real utilization, 5-year amortization, 1.5x redundancy, $0.12/kWh, PUE 1.56, monthly egress and cross-region transfer at $0.03/GB, backup at $0.02/GB. Storage, network, and backup are scenario totals; CPU and RAM are per instance.",
         "breakdown": breakdown,
         "price_provenance": {"source": "Static infrastructure assumptions", "region": None, "region_status": "not applicable to this generic baseline", "last_updated": None},
+        "network_transfer": {
+            "source_region": network_source_region,
+            "destination_region": network_destination_region,
+            "cross_region_gb_month": round(float(network_cross_region_gb_month), 2),
+        },
     }

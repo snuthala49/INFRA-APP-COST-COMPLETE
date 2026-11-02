@@ -23,7 +23,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
   const rows = [
     'Instance', 'vCPU', 'RAM (GB)', 'Compute / CapEx', 'Storage', 'Power',
     'Facilities', 'Operations', 'Maintenance', 'Software licensing',
-    'K8s overhead', 'Network ingress', 'Network egress', 'Backup', costLabel,
+    'K8s overhead', 'Network ingress', 'Network egress', 'Cross-region transfer', 'Backup', costLabel,
   ];
 
   const formatCurrency = (value: number, currency = 'USD') =>
@@ -58,6 +58,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
       'K8s overhead': 'k8s_overhead',
       'Network ingress': 'network_ingress',
       'Network egress': 'network_egress',
+      'Cross-region transfer': 'network_cross_region',
       'Backup': 'backup',
     };
     const key = breakdownKey[row];
@@ -65,7 +66,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
       return 'Included in infrastructure baseline';
     }
     if (key && breakdown[key] !== undefined) return formatCurrency(breakdown[key], r.currency || 'USD');
-    if (key && ['Network ingress', 'Power', 'Facilities', 'Operations', 'Maintenance', 'Software licensing', 'K8s overhead'].includes(row)) {
+    if (key && ['Network ingress', 'Cross-region transfer', 'Power', 'Facilities', 'Operations', 'Maintenance', 'Software licensing', 'K8s overhead'].includes(row)) {
       return formatCurrency(0, r.currency || 'USD');
     }
     return '-';

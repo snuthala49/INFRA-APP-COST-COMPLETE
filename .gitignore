@@ -29,3 +29,5 @@ frontend/playwright-report/
 .env
 .env.local
 .env.*.local
+
+backend/cache/

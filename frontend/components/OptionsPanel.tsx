@@ -31,6 +31,9 @@ interface Props {
   storage: number;
   networkIngress: number;
   networkEgress: number;
+  networkCrossRegion: number;
+  networkSourceRegion: string;
+  networkDestinationRegion: string;
   backup: number;
   instanceCount: number;
   pricingModel: "on_demand" | "reserved_1yr" | "reserved_3yr" | "spot";
@@ -41,6 +44,9 @@ interface Props {
   setStorage: (n: number) => void;
   setNetworkIngress: (n: number) => void;
   setNetworkEgress: (n: number) => void;
+  setNetworkCrossRegion: (n: number) => void;
+  setNetworkSourceRegion: (region: string) => void;
+  setNetworkDestinationRegion: (region: string) => void;
   setBackup: (n: number) => void;
   setInstanceCount: (n: number) => void;
   setPricingModel: (p: "on_demand" | "reserved_1yr" | "reserved_3yr" | "spot") => void;
@@ -112,6 +118,9 @@ const OptionsPanel: React.FC<Props> = ({
   storage,
   networkIngress,
   networkEgress,
+  networkCrossRegion,
+  networkSourceRegion,
+  networkDestinationRegion,
   backup,
   instanceCount,
   pricingModel,
@@ -122,6 +131,9 @@ const OptionsPanel: React.FC<Props> = ({
   setStorage,
   setNetworkIngress,
   setNetworkEgress,
+  setNetworkCrossRegion,
+  setNetworkSourceRegion,
+  setNetworkDestinationRegion,
   setBackup,
   setInstanceCount,
   setPricingModel,
@@ -213,6 +225,15 @@ const OptionsPanel: React.FC<Props> = ({
         <InputField label="Storage scenario total (GB)" value={storage} onChange={setStorage} />
         <InputField label="Monthly ingress (GB)" value={networkIngress} onChange={setNetworkIngress} />
         <InputField label="Monthly egress (GB)" value={networkEgress} onChange={setNetworkEgress} />
+        <InputField label="Monthly cross-region transfer (GB)" value={networkCrossRegion} onChange={setNetworkCrossRegion} />
+        <div>
+          <label htmlFor="network-source-region" className="mb-1 block text-sm font-semibold text-slate-800">Source region</label>
+          <input id="network-source-region" type="text" value={networkSourceRegion} onChange={(event) => setNetworkSourceRegion(event.target.value)} placeholder="e.g. us-east-1" className="input-polished w-full" />
+        </div>
+        <div>
+          <label htmlFor="network-destination-region" className="mb-1 block text-sm font-semibold text-slate-800">Destination region</label>
+          <input id="network-destination-region" type="text" value={networkDestinationRegion} onChange={(event) => setNetworkDestinationRegion(event.target.value)} placeholder="e.g. us-west-2" className="input-polished w-full" />
+        </div>
         <InputField label="Backup scenario total (GB)" value={backup} onChange={setBackup} />
         <InputField label="Instance Count" value={instanceCount} onChange={(value) => setInstanceCount(Math.max(1, Math.min(500, value)))} />
       </div>

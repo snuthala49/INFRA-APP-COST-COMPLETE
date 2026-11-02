@@ -46,6 +46,29 @@ Notes:
 - Catalog and infrastructure prices are static estimates. `/api/catalog` and `/api/calculate` return `price_provenance`; regional scope and refresh time are currently unverified for the cloud catalogs.
 - Requests that exceed catalog capacity or select an undersized SKU return HTTP 422 rather than a misleading smaller-instance estimate.
 
+## v3.0 Network Pricing Slice
+
+- Monthly internet egress uses FRD tier estimates per provider: first 10,000 GB, next 40,000 GB, then traffic above 50,000 GB. One TB is modeled as 1,000 GB.
+- Ingress is returned as an explicit zero-cost line item.
+- Cross-region transfer is a separate monthly GB input and requires distinct source and destination region labels. Reference rates are AWS $0.02/GB, Azure $0.02/GB, and GCP $0.01/GB; the generic Kubernetes and on-prem baselines use their existing network rates.
+- These are roadmap reference rates, not live region-pair quotes. Cloud catalog pricing remains static and is not yet resolved by the selected source/destination regions.
+
+## v3.0 Database Price Catalog
+
+The database price sync normalizes published provider price records into a local cache for AWS RDS/Aurora, DynamoDB, and Redshift; Azure SQL, PostgreSQL, Cosmos DB, and Synapse; and GCP Cloud SQL, Spanner, Firestore, Bigtable, and BigQuery.
+
+1. Enable the Google Cloud Billing Catalog API and configure `GOOGLE_CLOUD_BILLING_API_KEY` in the local backend environment. Do not commit the key.
+2. From `backend/`, refresh the price cache for the chosen regions:
+
+```bash
+python3 -m utils.database_price_sync --aws-region us-east-1 --azure-region eastus --gcp-region us-central1
+```
+
+3. The sync writes `backend/cache/database_prices.json`. AWS and Azure price sources are public; if GCP is unavailable or its key is missing, the cache records the provider status and keeps other provider prices usable.
+4. `GET /api/database/catalog?provider=aws&service=rds&region=us-east-1` returns matching source rates. `POST /api/database/calculate` accepts selected rate IDs and quantities in the exact units returned by the price APIs.
+
+Database estimates include only selected rate lines; they do not infer workload quantities or silently invent missing prices. Always review the source, effective date, unit, region, and provider sync status shown with the estimate.
+
 ## Frontend - Development & Local Testing 🖥️
 
 1. Configure the API URL (optional - defaults to http://127.0.0.1:5000):
