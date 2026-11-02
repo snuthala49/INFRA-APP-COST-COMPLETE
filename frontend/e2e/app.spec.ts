@@ -122,3 +122,23 @@ test('database panel explains missing GCP catalog credentials', async ({ page })
   await page.getByRole('button', { name: 'Load prices' }).click();
   await expect(page.locator('p[role="alert"]')).toContainText('GOOGLE_CLOUD_BILLING_API_KEY');
 });
+
+test('SEO metadata and discovery routes are production-ready', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveTitle(/InfraCostIQ/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://www.infracostiq.com');
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /^https:\/\/www\.infracostiq\.com\/opengraph-image/);
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+
+  const robots = await page.request.get('/robots.txt');
+  expect(robots.ok()).toBeTruthy();
+  expect(await robots.text()).toContain('https://www.infracostiq.com/sitemap.xml');
+
+  const sitemap = await page.request.get('/sitemap.xml');
+  expect(sitemap.ok()).toBeTruthy();
+  expect(await sitemap.text()).toContain('https://www.infracostiq.com/');
+
+  const indexNowKey = await page.request.get('/indexnow-key.txt');
+  expect(indexNowKey.ok()).toBeTruthy();
+  expect((await indexNowKey.text()).trim()).toMatch(/^[a-f0-9]{32}$/);
+});

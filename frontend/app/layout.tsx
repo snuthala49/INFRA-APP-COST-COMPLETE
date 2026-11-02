@@ -1,9 +1,50 @@
 import '../styles/globals.css';
+import type { Metadata } from 'next';
 
-export const metadata = {
-  title: 'InfraCostIQ',
-  description: 'Estimate and compare infrastructure costs across hosting platforms',
-}
+const siteUrl = new URL('https://www.infracostiq.com');
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION;
+const bingVerification = process.env.BING_SITE_VERIFICATION;
+
+export const metadata: Metadata = {
+  metadataBase: siteUrl,
+  title: {
+    default: 'InfraCostIQ | Cloud Infrastructure Cost Estimator',
+    template: '%s | InfraCostIQ',
+  },
+  description: 'Compare AWS, Azure, Google Cloud, Kubernetes, and on-prem infrastructure costs with transparent pricing assumptions and database estimates.',
+  applicationName: 'InfraCostIQ',
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+    },
+  },
+  openGraph: {
+    type: 'website',
+    url: '/',
+    siteName: 'InfraCostIQ',
+    locale: 'en_US',
+    title: 'InfraCostIQ | Cloud Infrastructure Cost Estimator',
+    description: 'Compare infrastructure costs across AWS, Azure, Google Cloud, Kubernetes, and on-prem with transparent assumptions.',
+    images: [{ url: 'https://www.infracostiq.com/opengraph-image', width: 1200, height: 630, alt: 'InfraCostIQ cloud cost intelligence' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'InfraCostIQ | Cloud Infrastructure Cost Estimator',
+    description: 'Compare infrastructure costs across AWS, Azure, Google Cloud, Kubernetes, and on-prem.',
+    images: ['https://www.infracostiq.com/opengraph-image'],
+  },
+  verification: {
+    ...(googleVerification ? { google: googleVerification } : {}),
+    ...(bingVerification ? { other: { 'msvalidate.01': bingVerification } } : {}),
+  },
+};
 
 export default function RootLayout({
   children,
