@@ -40,6 +40,7 @@ interface QuoteResult {
     rate_id: string;
     component: string;
     sku: string;
+    price_region_scope?: string;
     quantity: number;
     unit?: string;
     unit_price: number;
@@ -255,7 +256,7 @@ export default function DatabaseCostingPanel({ apiBase }: { apiBase: string }) {
               <span className="text-xl font-bold text-emerald-300">{formatCurrency(result.total, result.currency)}/month</span>
             </div>
             <ul className="mt-3 divide-y divide-slate-700 text-sm">
-              {result.line_items.map((line) => <li key={line.rate_id} className="flex flex-wrap justify-between gap-2 py-2 text-slate-200"><span>{line.component} · {line.sku} · {line.quantity} {line.unit}</span><span>{formatCurrency(line.subtotal, result.currency)}</span></li>)}
+              {result.line_items.map((line) => <li key={line.rate_id} className="flex flex-wrap justify-between gap-2 py-2 text-slate-200"><span>{line.component} · {line.sku} · {line.quantity} {line.unit}{line.price_region_scope ? ` · price scope ${line.price_region_scope}` : ""}</span><span>{formatCurrency(line.subtotal, result.currency)}</span></li>)}
             </ul>
             <p className="mt-2 text-xs text-slate-400">Rates from provider price catalogs; effective date is shown per line. Estimate includes only the selected lines.</p>
           </div>

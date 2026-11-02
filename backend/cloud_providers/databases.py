@@ -6,6 +6,24 @@ from typing import Dict, List, Optional
 from utils.database_price_sync import DATABASE_SERVICES
 
 
+def _rate_cost(rate: Dict, quantity: Decimal) -> Decimal:
+    tiers = rate.get("dimensions", {}).get("tiered_rates", [])
+    if not tiers:
+        return quantity * Decimal(str(rate["unit_price"]))
+
+    ordered_tiers = sorted(tiers, key=lambda tier: Decimal(str(tier.get("start_usage_amount", 0))))
+    total = Decimal("0")
+    for index, tier in enumerate(ordered_tiers):
+        start = Decimal(str(tier.get("start_usage_amount", 0)))
+        end = Decimal(str(ordered_tiers[index + 1]["start_usage_amount"])) if index + 1 < len(ordered_tiers) else quantity
+        if quantity <= start:
+            break
+        tier_quantity = min(quantity, end) - start
+        if tier_quantity > 0:
+            total += tier_quantity * Decimal(str(tier["unit_price"]))
+    return total
+
+
 def get_database_rate_catalog(
     cache: Dict,
     provider: str,
@@ -73,13 +91,14 @@ def calculate_database_quote(payload: Dict, cache: Dict) -> Dict:
             raise ValueError("A selected database price rate is not available in the requested provider, service, and region")
         quantity = Decimal(str(requested["quantity"]))
         unit_price = Decimal(str(rate["unit_price"]))
-        line_total = quantity * unit_price
+        line_total = _rate_cost(rate, quantity)
         currencies.add(rate.get("currency", "USD"))
         total += line_total
         line_items.append({
             "rate_id": rate["rate_id"],
             "component": rate["component"],
             "sku": rate["sku"],
+            "price_region_scope": rate.get("dimensions", {}).get("matched_service_region", rate.get("region")),
             "quantity": float(quantity),
             "unit": rate.get("unit"),
             "unit_price": float(unit_price),
