@@ -16,25 +16,36 @@ interface CatalogPayload {
     azure: Record<string, number>;
     gcp: Record<string, number>;
   };
+  price_provenance?: Record<ProviderKey, {
+    source: string;
+    region: string | null;
+    region_status: string;
+    last_updated: string | null;
+  }>;
 }
 
 interface Props {
   apiBase: string;
+  cpu: number;
+  ram: number;
   storage: number;
-  network: number;
+  networkIngress: number;
+  networkEgress: number;
   backup: number;
   instanceCount: number;
   pricingModel: "on_demand" | "reserved_1yr" | "reserved_3yr" | "spot";
   selectedSkus: Record<ProviderKey, string | null>;
   storageTypes: Record<ProviderKey, string>;
+  setCpu: (n: number) => void;
+  setRam: (n: number) => void;
   setStorage: (n: number) => void;
-  setNetwork: (n: number) => void;
+  setNetworkIngress: (n: number) => void;
+  setNetworkEgress: (n: number) => void;
   setBackup: (n: number) => void;
   setInstanceCount: (n: number) => void;
   setPricingModel: (p: "on_demand" | "reserved_1yr" | "reserved_3yr" | "spot") => void;
   setSelectedSkus: (value: Record<ProviderKey, string | null>) => void;
   setStorageTypes: (value: Record<ProviderKey, string>) => void;
-  onWorkloadChange: (cpu: number, ram: number) => void;
   period: "monthly" | "annual";
   setPeriod: (p: "monthly" | "annual") => void;
   onCalculate: () => void;
@@ -80,32 +91,42 @@ const fallbackCatalog: CatalogPayload = {
     azure: { premium_ssd: 0.135, standard_ssd: 0.1, standard_hdd: 0.04, ultra_disk: 0.29 },
     gcp: { balanced_pd: 0.1, ssd_pd: 0.17, extreme_pd: 0.27, standard_pd: 0.04 },
   },
+  price_provenance: {
+    aws: { source: "Static fallback catalog", region: null, region_status: "not specified", last_updated: null },
+    azure: { source: "Static fallback catalog", region: null, region_status: "not specified", last_updated: null },
+    gcp: { source: "Static fallback catalog", region: null, region_status: "not specified", last_updated: null },
+  },
 };
 
 const pricingOptions = [
   { key: "on_demand", label: "On-Demand", savings: "" },
-  { key: "reserved_1yr", label: "1-Yr Reserved", savings: "save 38%" },
-  { key: "reserved_3yr", label: "3-Yr Reserved", savings: "save 57%" },
-  { key: "spot", label: "Spot", savings: "save 70%" },
+  { key: "reserved_1yr", label: "1-Yr Reserved", savings: "" },
+  { key: "reserved_3yr", label: "3-Yr Reserved", savings: "" },
+  { key: "spot", label: "Spot", savings: "" },
 ] as const;
 
 const OptionsPanel: React.FC<Props> = ({
   apiBase,
+  cpu,
+  ram,
   storage,
-  network,
+  networkIngress,
+  networkEgress,
   backup,
   instanceCount,
   pricingModel,
   selectedSkus,
   storageTypes,
+  setCpu,
+  setRam,
   setStorage,
-  setNetwork,
+  setNetworkIngress,
+  setNetworkEgress,
   setBackup,
   setInstanceCount,
   setPricingModel,
   setSelectedSkus,
   setStorageTypes,
-  onWorkloadChange,
   period,
   setPeriod,
   onCalculate,
@@ -120,7 +141,7 @@ const OptionsPanel: React.FC<Props> = ({
     const fetchCatalog = async () => {
       setCatalogLoading(true);
       try {
-        const res = await fetch(`${apiBase}/catalog`);
+        const res = await fetch(`${apiBase}/api/catalog`);
         if (!res.ok) throw new Error("catalog fetch failed");
         const data = (await res.json()) as CatalogPayload;
         if (mounted) {
@@ -142,13 +163,7 @@ const OptionsPanel: React.FC<Props> = ({
   }, [apiBase]);
 
   const activeCatalog = useMemo(() => catalogPayload[activeProvider], [catalogPayload, activeProvider]);
-
-  useEffect(() => {
-    const selectedSku = selectedSkus[activeProvider];
-    if (!selectedSku) return;
-    const entry = activeCatalog.find((item) => item.sku === selectedSku);
-    if (entry) onWorkloadChange(entry.vcpu, entry.ram_gb);
-  }, [activeProvider, activeCatalog, selectedSkus, onWorkloadChange]);
+  const activeProvenance = catalogPayload.price_provenance?.[activeProvider];
 
   return (
     <div className="calculator-panel card">
@@ -178,6 +193,8 @@ const OptionsPanel: React.FC<Props> = ({
       ) : null}
 
       <div className="space-y-3">
+        <InputField label="Required vCPU per instance" value={cpu} onChange={setCpu} />
+        <InputField label="Required RAM per instance (GB)" value={ram} onChange={setRam} />
         <InstanceSelector
           provider={activeProvider}
           catalog={activeCatalog}
@@ -193,10 +210,15 @@ const OptionsPanel: React.FC<Props> = ({
           storageRates={catalogPayload.storage_rates[activeProvider] || {}}
         />
 
-        <InputField label="Storage (GB)" value={storage} onChange={setStorage} />
-        <InputField label="Network (Mbps)" value={network} onChange={setNetwork} />
-        <InputField label="Backup (GB)" value={backup} onChange={setBackup} />
+        <InputField label="Storage scenario total (GB)" value={storage} onChange={setStorage} />
+        <InputField label="Monthly ingress (GB)" value={networkIngress} onChange={setNetworkIngress} />
+        <InputField label="Monthly egress (GB)" value={networkEgress} onChange={setNetworkEgress} />
+        <InputField label="Backup scenario total (GB)" value={backup} onChange={setBackup} />
         <InputField label="Instance Count" value={instanceCount} onChange={(value) => setInstanceCount(Math.max(1, Math.min(500, value)))} />
+      </div>
+
+      <div className="mt-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-950" role="note" data-testid="price-provenance-note">
+        {activeProvenance?.source || "Static catalog estimate"}. Region: {activeProvenance?.region || "not specified"}; last updated: {activeProvenance?.last_updated || "unknown"}.
       </div>
 
       <div className="mt-4">
@@ -243,7 +265,7 @@ const OptionsPanel: React.FC<Props> = ({
                 : "bg-slate-800 text-slate-300 hover:bg-slate-700"
             }`}
           >
-            Annual <span className="text-xs opacity-75">(15% off)</span>
+            Annual
           </button>
         </div>
       </div>

@@ -5,7 +5,9 @@ def gcp_cost(
     cpu=0,
     ram=0,
     storage=0,
-    network=0,
+    network_ingress_gb_month=0,
+    network_egress_gb_month=0,
+    network=None,
     backup=0,
     gcp_sku=None,
     pricing_model="on_demand",
@@ -13,12 +15,15 @@ def gcp_cost(
     gcp_storage_type="balanced_pd",
     **_,
 ):
+    if network is not None and not network_egress_gb_month:
+        network_egress_gb_month = float(network) * 324
     return calculate_provider_cost(
         provider="gcp",
         cpu=cpu,
         ram=ram,
         storage=storage,
-        network=network,
+        network_ingress_gb_month=network_ingress_gb_month,
+        network_egress_gb_month=network_egress_gb_month,
         backup=backup,
         sku=gcp_sku,
         pricing_model=pricing_model,

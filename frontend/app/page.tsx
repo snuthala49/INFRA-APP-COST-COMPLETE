@@ -18,6 +18,12 @@ interface CostResult {
   instance_count?: number;
   breakdown?: { [k: string]: number };
   assumptions?: string;
+  price_provenance?: {
+    source: string;
+    region: string | null;
+    region_status: string;
+    last_updated: string | null;
+  };
   selected_instance?: {
     sku?: string;
     type: string;
@@ -39,7 +45,8 @@ export default function Home() {
   const [cpu, setCpu] = useState(2);
   const [ram, setRam] = useState(8);
   const [storage, setStorage] = useState(100);
-  const [network, setNetwork] = useState(10);
+  const [networkIngress, setNetworkIngress] = useState(0);
+  const [networkEgress, setNetworkEgress] = useState(3240);
   const [backup, setBackup] = useState(50);
   const [selectedSkus, setSelectedSkus] = useState<Record<ProviderKey, string | null>>({ aws: null, azure: null, gcp: null });
   const [pricingModel, setPricingModel] = useState<"on_demand" | "reserved_1yr" | "reserved_3yr" | "spot">("on_demand");
@@ -52,10 +59,11 @@ export default function Home() {
 
   const [results, setResults] = useState<CostResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [period, setPeriod] = useState<'monthly'|'annual'>('monthly');
   const [activeTab, setActiveTab] = useState<TabKey>("product");
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
-  const periodMultiplier = period === 'monthly' ? 1 : (12 * 0.85);
+  const periodMultiplier = period === 'monthly' ? 1 : 12;
 
   const scrollToSection = (tab: TabKey) => {
     setActiveTab(tab);
@@ -93,6 +101,7 @@ export default function Home() {
 
   const handleCalculate = async () => {
     setLoading(true);
+    setErrorMessage(null);
     try {
       const res = await fetch(`${API_BASE}/api/calculate`, {
         method: "POST",
@@ -101,7 +110,8 @@ export default function Home() {
           cpu,
           ram,
           storage,
-          network,
+          network_ingress_gb_month: networkIngress,
+          network_egress_gb_month: networkEgress,
           backup,
           aws_sku: selectedSkus.aws,
           azure_sku: selectedSkus.azure,
@@ -113,8 +123,8 @@ export default function Home() {
           gcp_storage_type: storageTypes.gcp,
         }),
       });
-      if (!res.ok) throw new Error("Backend error");
       const data = await res.json();
+      if (!res.ok) throw new Error(data.details || data.error || "Calculation failed");
       const arr = [data.aws, data.azure, data.gcp, data.onprem, data.kubernetes];
       const normalized = arr.map((r: any) => ({
         ...r,
@@ -124,9 +134,10 @@ export default function Home() {
       setResults(normalized);
     } catch (err) {
       console.error(err);
-      alert("Error connecting to backend");
+      setErrorMessage(err instanceof Error ? err.message : "Unable to calculate costs");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
@@ -139,24 +150,26 @@ export default function Home() {
           <div className="lg:col-span-1">
             <OptionsPanel
               apiBase={API_BASE}
+              cpu={cpu}
+              ram={ram}
               storage={storage}
-              network={network}
+              networkIngress={networkIngress}
+              networkEgress={networkEgress}
               backup={backup}
               instanceCount={instanceCount}
               pricingModel={pricingModel}
               selectedSkus={selectedSkus}
               storageTypes={storageTypes}
+              setCpu={setCpu}
+              setRam={setRam}
               setStorage={setStorage}
-              setNetwork={setNetwork}
+              setNetworkIngress={setNetworkIngress}
+              setNetworkEgress={setNetworkEgress}
               setBackup={setBackup}
               setInstanceCount={setInstanceCount}
               setPricingModel={setPricingModel}
               setSelectedSkus={setSelectedSkus}
               setStorageTypes={setStorageTypes}
-              onWorkloadChange={(nextCpu, nextRam) => {
-                setCpu(nextCpu);
-                setRam(nextRam);
-              }}
               period={period}
               setPeriod={setPeriod}
               onCalculate={handleCalculate}
@@ -165,6 +178,7 @@ export default function Home() {
           </div>
 
           <div className="lg:col-span-3 bg-slate-900/65 border border-slate-800 rounded-2xl p-4">
+            {errorMessage ? <div role="alert" className="mb-4 rounded-md border border-red-400/40 bg-red-950/40 px-3 py-2 text-sm text-red-200">{errorMessage}</div> : null}
             {results.length > 0 ? (
               <>
                 {(() => {
@@ -229,10 +243,13 @@ export default function Home() {
                           <ProviderCard
                             provider={r.provider}
                             total={Math.round(r.total * periodMultiplier * 100) / 100}
+                            multiplier={periodMultiplier}
+                            period={period}
                             currency={r.currency}
                             breakdown={r.breakdown}
                             cheapest={r.total === Math.min(...results.map((x) => x.total))}
                             assumptions={r.assumptions}
+                            price_provenance={r.price_provenance}
                             selected_instance={r.selected_instance}
                             pricing_model={
                               ["kubernetes", "onprem"].includes(r.provider.toLowerCase())

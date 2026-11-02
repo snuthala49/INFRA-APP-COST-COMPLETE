@@ -2,9 +2,11 @@ def calculate_onprem_tco(
     cpu=0,
     ram=0,
     storage=0,
-    network=0,   # Mbps
+    network_ingress_gb_month=0,
+    network_egress_gb_month=0,
     backup=0,    # GB
     instance_count=1,
+    network=None,
 ):
     """
     Executive-level On-Prem TCO model (finance-grade).
@@ -40,8 +42,8 @@ def calculate_onprem_tco(
 
     # ---- CapEx total ----
     capex_total = (
-        cpu * capex_per_vcpu
-        + ram * capex_per_gb_ram
+        (cpu * count) * capex_per_vcpu
+        + (ram * count) * capex_per_gb_ram
         + storage * capex_per_gb_storage
     )
 
@@ -50,8 +52,8 @@ def calculate_onprem_tco(
 
     # ---- Power + cooling ----
     watts_total = (
-        cpu * watts_per_vcpu
-        + ram * watts_per_gb_ram
+        (cpu * count) * watts_per_vcpu
+        + (ram * count) * watts_per_gb_ram
         + storage * watts_per_gb_storage
     )
 
@@ -68,11 +70,12 @@ def calculate_onprem_tco(
     maintenance_cost = 0.12 * capex_total / 12
 
     # ---- Software licensing: OS + hypervisor + monitoring ----
-    software_licensing_cost = (cpu * 100.0) / 12
+    software_licensing_cost = (cpu * count * 100.0) / 12
 
     # ---- Network ($0.02/GB egress — conservative middle ground) ----
-    monthly_gb_transfer = network * 324  # Mbps → GB/month (Mbps × 3600×24×30 / 8 / 1024 / 1024 / 1024)
-    network_cost = monthly_gb_transfer * 0.02
+    if network is not None and not network_egress_gb_month:
+        network_egress_gb_month = float(network) * 324
+    network_cost = max(float(network_egress_gb_month), 0.0) * 0.02
 
     # ---- Backup / DR ----
     backup_rate = 0.03  # $ per GB / month
@@ -88,16 +91,7 @@ def calculate_onprem_tco(
         + network_cost
         + backup_cost
     )
-    capex_monthly *= count
-    power_cost *= count
-    facilities_cost *= count
-    ops_cost *= count
-    maintenance_cost *= count
-    software_licensing_cost *= count
-    network_cost *= count
-    backup_cost *= count
-
-    opex_monthly = opex_single * count
+    opex_monthly = opex_single
     total = capex_monthly + opex_monthly
 
     return {
@@ -119,7 +113,7 @@ def calculate_onprem_tco(
             "Per Garnter (Gartner-aligned) Executive TCO: 5yr amortization, 1.4x redundancy, $0.12/kWh, "
             "PUE 1.56, CapEx: $500/vCPU (hw+OS+support), $25/GB RAM, $0.15/GB storage, "
             "facilities 15%, ops 35% annually, maintenance 12% annually, software licensing $100/vCPU/year, "
-            "network $0.02/GB egress (Mbps→GB/month), backup $0.03/GB"
+            "network egress $0.02/GB-month, backup $0.03/GB-month. CPU/RAM are per instance; storage, network, and backup are scenario totals."
         ),
         "breakdown": {
             "capex": round(capex_monthly, 2),
@@ -128,7 +122,9 @@ def calculate_onprem_tco(
             "operations": round(ops_cost, 2),
             "maintenance": round(maintenance_cost, 2),
             "software_licensing": round(software_licensing_cost, 2),
-            "network": round(network_cost, 2),
+            "network_egress": round(network_cost, 2),
+            "network_ingress": 0.0,
             "backup": round(backup_cost, 2),
         },
+        "price_provenance": {"source": "Static infrastructure assumptions", "region": None, "region_status": "not applicable to on-premises", "last_updated": None},
     }

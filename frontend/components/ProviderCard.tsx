@@ -9,7 +9,15 @@ interface Props {
   instance_count?: number;
   breakdown?: { [k: string]: number };
   cheapest?: boolean;
+  multiplier?: number;
+  period?: 'monthly' | 'annual';
   assumptions?: string;
+  price_provenance?: {
+    source: string;
+    region: string | null;
+    region_status: string;
+    last_updated: string | null;
+  };
   selected_instance?: {
     sku?: string;
     type: string;
@@ -30,13 +38,13 @@ const colors: { [k: string]: string } = {
   onprem: "from-stone-200 to-stone-300 text-gray-900",
 };
 
-const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_model, instance_count = 1, breakdown, cheapest, assumptions, selected_instance }) => {
+const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_model, instance_count = 1, breakdown, cheapest, multiplier = 1, period = 'monthly', assumptions, price_provenance, selected_instance }) => {
   const [open, setOpen] = useState(false);
   const pricingLabel: Record<string, string> = {
     on_demand: 'On-Demand',
-    reserved_1yr: '1-Yr Reserved — 38% off On-Demand',
-    reserved_3yr: '3-Yr Reserved — 57% off On-Demand',
-    spot: 'Spot — 70% off On-Demand',
+    reserved_1yr: '1-Yr Reserved',
+    reserved_3yr: '3-Yr Reserved',
+    spot: 'Spot',
     baseline: 'Baseline (TCO)',
     onprem_k8s: 'Baseline (TCO)',
   };
@@ -98,7 +106,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
         { label: 'Power', value: breakdown.power },
         { label: 'Facilities', value: breakdown.facilities },
         { label: 'Operations', value: breakdown.operations },
-        { label: 'Network', value: breakdown.network },
+        { label: 'Network egress', value: breakdown.network_egress ?? breakdown.network },
         { label: 'Backup', value: breakdown.backup },
       ];
     }
@@ -110,7 +118,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
         { label: 'Facilities', value: breakdown.facilities },
         { label: 'Operations', value: breakdown.operations },
         { label: 'K8s Overhead', value: breakdown.k8s_overhead },
-        { label: 'Network', value: breakdown.network },
+        { label: 'Network egress', value: breakdown.network_egress ?? breakdown.network },
         { label: 'Backup', value: breakdown.backup },
       ];
     }
@@ -118,7 +126,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
     return [
       { label: 'Compute', value: breakdown.compute ?? breakdown.instance ?? breakdown.cpu },
       { label: 'Storage', value: breakdown.storage },
-      { label: 'Network', value: breakdown.network },
+      { label: 'Network egress', value: breakdown.network_egress ?? breakdown.network },
       { label: 'Backup', value: breakdown.backup },
     ];
   })();
@@ -168,7 +176,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
                 {fmt(Number(selected_instance.price_per_month))}/instance × {instance_count} = {fmt(Number(total))}/month
               </div>
             ) : (
-              <div className="text-sm text-gray-500 mt-1">Estimated monthly cost</div>
+              <div className="text-sm text-gray-500 mt-1">Estimated {period} cost</div>
             )}
           </div>
           <div className="w-20 h-20 rounded-md overflow-hidden relative flex items-center justify-center">
@@ -182,7 +190,7 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
             return (
               <div key={label} className="stat-chip">
                 <div className="stat-key">{label}</div>
-                <div className="stat-val">{fmt(Number(value))}</div>
+                <div className="stat-val">{fmt(Number(value) * multiplier)}</div>
               </div>
             );
           })}
@@ -195,13 +203,18 @@ const ProviderCard: React.FC<Props> = ({ provider, total, currency, pricing_mode
                 {Object.entries(breakdown).map(([k, v]) => (
                   <li key={k} className="flex justify-between">
                     <span className="capitalize">{k}</span>
-                    <span className="font-mono">{fmt(Number(v))}</span>
+                    <span className="font-mono">{fmt(Number(v) * multiplier)}</span>
                   </li>
                 ))}
               </ul>
               {assumptions ? (
                 <div className="text-[11px] leading-snug text-slate-500 italic">
                   {assumptions}
+                </div>
+              ) : null}
+              {price_provenance ? (
+                <div className="text-[11px] leading-snug text-slate-500">
+                  Price source: {price_provenance.source}. Region: {price_provenance.region || price_provenance.region_status}; last updated: {price_provenance.last_updated || 'unknown'}.
                 </div>
               ) : null}
             </div>

@@ -36,6 +36,16 @@ python3 -m pytest -q
 
 Notes:
 
+## v2.3 Calculation Contract
+
+- `cpu` is vCPU per instance; `ram` is GB RAM per instance.
+- `instance_count` scales compute resources and instance charges.
+- `storage` and `backup` are GB totals for the whole scenario, billed monthly.
+- `network_ingress_gb_month` and `network_egress_gb_month` are scenario-wide monthly GB. Ingress is currently modeled as free; egress uses the configured estimate per GB.
+- Legacy requests using `network` are still accepted as Mbps and converted using the existing 324 GB/month per Mbps assumption. New clients should send the explicit ingress/egress fields.
+- Catalog and infrastructure prices are static estimates. `/api/catalog` and `/api/calculate` return `price_provenance`; regional scope and refresh time are currently unverified for the cloud catalogs.
+- Requests that exceed catalog capacity or select an undersized SKU return HTTP 422 rather than a misleading smaller-instance estimate.
+
 ## Frontend - Development & Local Testing 🖥️
 
 1. Configure the API URL (optional - defaults to http://127.0.0.1:5000):

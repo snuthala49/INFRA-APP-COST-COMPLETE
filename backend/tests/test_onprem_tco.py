@@ -20,7 +20,8 @@ def test_onprem_cost_structure_and_total_consistency():
         "operations",
         "maintenance",
         "software_licensing",
-        "network",
+        "network_egress",
+        "network_ingress",
         "backup",
     }
     assert "capex_monthly" in result
@@ -33,4 +34,4 @@ def test_onprem_cost_structure_and_total_consistency():
     assert "ops 35% annually" in result["assumptions"]
     assert "maintenance 12% annually" in result["assumptions"]
     assert "software licensing $100/vCPU/year" in result["assumptions"]
-    assert "network $0.02/GB" in result["assumptions"]
+    assert "network egress $0.02/GB-month" in result["assumptions"]

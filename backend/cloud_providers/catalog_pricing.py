@@ -23,6 +23,30 @@ DEFAULT_STORAGE_TYPE = {
     "gcp": "balanced_pd",
 }
 
+PRICE_PROVENANCE = {
+    "aws": {
+        "source": "Static in-repository catalog; not a live quote",
+        "source_url": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/index.json",
+        "region": None,
+        "region_status": "not specified in catalog",
+        "last_updated": None,
+    },
+    "azure": {
+        "source": "Static in-repository catalog; not a live quote",
+        "source_url": "https://prices.azure.com/api/retail/prices",
+        "region": None,
+        "region_status": "not specified in catalog",
+        "last_updated": None,
+    },
+    "gcp": {
+        "source": "Static in-repository catalog; not a live quote",
+        "source_url": "https://cloudbilling.googleapis.com/v1/services",
+        "region": None,
+        "region_status": "not specified in catalog",
+        "last_updated": None,
+    },
+}
+
 
 def _data_path(file_name: str) -> str:
     return os.path.join(os.path.dirname(__file__), "..", "data", file_name)
@@ -36,6 +60,10 @@ def load_catalog(provider: str) -> List[Dict]:
 def load_storage_rates() -> Dict[str, Dict[str, float]]:
     with open(_data_path("storage_rates.json"), "r") as f:
         return json.load(f)
+
+
+def load_price_provenance() -> Dict[str, Dict]:
+    return {provider: dict(metadata) for provider, metadata in PRICE_PROVENANCE.items()}
 
 
 def hourly_on_demand(entry: Dict) -> float:
@@ -68,7 +96,12 @@ def smart_match(catalog: List[Dict], cpu: float, ram: float) -> Dict:
 
     candidates = [entry for entry in catalog if entry.get("vcpu", 0) >= target_cpu and entry.get("ram_gb", 0) >= target_ram]
     if not candidates:
-        candidates = list(catalog)
+        max_cpu = max((entry.get("vcpu", 0) for entry in catalog), default=0)
+        max_ram = max((entry.get("ram_gb", 0) for entry in catalog), default=0)
+        raise ValueError(
+            f"No catalog instance meets {target_cpu:g} vCPU / {target_ram:g} GB RAM; "
+            f"catalog maximum is {max_cpu:g} vCPU / {max_ram:g} GB RAM"
+        )
 
     if ratio > 6:
         preferred = [entry for entry in candidates if entry.get("category") == "memory"]
@@ -88,7 +121,8 @@ def calculate_provider_cost(
     cpu: float,
     ram: float,
     storage: float,
-    network: float,
+    network_ingress_gb_month: float,
+    network_egress_gb_month: float,
     backup: float,
     sku: Optional[str],
     pricing_model: str,
@@ -98,7 +132,14 @@ def calculate_provider_cost(
     catalog = load_catalog(provider)
     storage_rates = load_storage_rates().get(provider, {})
 
-    selected = lookup_sku(catalog, sku) or smart_match(catalog, cpu, ram)
+    selected = lookup_sku(catalog, sku) if sku else smart_match(catalog, cpu, ram)
+    if selected is None:
+        raise ValueError(f"Unknown {provider} SKU: {sku}")
+    if selected.get("vcpu", 0) < cpu or selected.get("ram_gb", 0) < ram:
+        raise ValueError(
+            f"{provider} SKU {sku} provides {selected.get('vcpu', 0)} vCPU / "
+            f"{selected.get('ram_gb', 0)} GB RAM, below the requested {cpu} vCPU / {ram} GB RAM"
+        )
 
     selected_storage_type = storage_type if storage_type in storage_rates else DEFAULT_STORAGE_TYPE[provider]
     storage_rate = float(storage_rates.get(selected_storage_type, 0.10))
@@ -109,12 +150,11 @@ def calculate_provider_cost(
 
     storage_cost = max(float(storage), 0.0) * storage_rate
 
-    monthly_gb_transfer = max(float(network), 0.0) * 324
-    network_cost = monthly_gb_transfer * NETWORK_PRICING_PER_GB[provider]
+    network_egress_cost = max(float(network_egress_gb_month), 0.0) * NETWORK_PRICING_PER_GB[provider]
 
     backup_cost = max(float(backup), 0.0) * BACKUP_PRICING_PER_GB[provider]
 
-    total = compute_cost + storage_cost + network_cost + backup_cost
+    total = compute_cost + storage_cost + network_egress_cost + backup_cost
 
     return {
         "provider": provider,
@@ -123,6 +163,7 @@ def calculate_provider_cost(
         "pricing_model": pricing_model,
         "instance_count": int(instance_count),
         "storage_type": selected_storage_type,
+        "price_provenance": dict(PRICE_PROVENANCE[provider]),
         "selected_instance": {
             "sku": selected.get("sku"),
             "type": selected.get("sku"),
@@ -137,7 +178,8 @@ def calculate_provider_cost(
         "breakdown": {
             "instance": round(compute_cost, 2),
             "storage": round(storage_cost, 2),
-            "network": round(network_cost, 2),
+            "network_ingress": 0.0,
+            "network_egress": round(network_egress_cost, 2),
             "backup": round(backup_cost, 2),
         },
     }
