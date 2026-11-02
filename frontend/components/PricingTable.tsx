@@ -20,39 +20,14 @@ interface Props { results: Result[]; multiplier?: number; period?: 'monthly' | '
 
 const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'monthly' }) => {
   const costLabel = period === 'annual' ? 'Annual' : 'Monthly';
-  const rows = ['Instance', 'vCPU', 'RAM (GB)', 'Storage', 'Network', 'Backup', costLabel];
+  const rows = [
+    'Instance', 'vCPU', 'RAM (GB)', 'Compute / CapEx', 'Storage', 'Power',
+    'Facilities', 'Operations', 'Maintenance', 'Software licensing',
+    'K8s overhead', 'Network ingress', 'Network egress', 'Backup', costLabel,
+  ];
 
-  const infraLabel = (provider: string, row: string): string => {
-    const p = provider.toLowerCase();
-    const lookup: Record<string, Record<string, string>> = {
-      aws: {
-        'Storage': 'EBS gp3',
-        'Network': 'Data transfer out',
-        'Backup': 'EBS snapshots / S3',
-      },
-      azure: {
-        'Storage': 'Managed Disk (Standard SSD)',
-        'Network': 'Outbound bandwidth',
-        'Backup': 'Azure Backup (LRS)',
-      },
-      gcp: {
-        'Storage': 'Persistent Disk (Balanced)',
-        'Network': 'Egress bandwidth',
-        'Backup': 'Cloud Storage Standard',
-      },
-      kubernetes: {
-        'Storage': 'Cluster persistent volumes',
-        'Network': 'Ingress / egress baseline',
-        'Backup': 'Cluster backup baseline',
-      },
-      onprem: {
-        'Storage': 'Local SAN/NAS baseline',
-        'Network': 'On-prem network baseline',
-        'Backup': 'Backup baseline',
-      },
-    };
-    return lookup[p]?.[row] || '-';
-  };
+  const formatCurrency = (value: number, currency = 'USD') =>
+    new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(value);
 
   const rowDisplayValue = (row: string, r: Result) => {
     const p = r.provider.toLowerCase();
@@ -71,7 +46,28 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
       return r.selected_instance?.memory_gb ?? '-';
     }
     
-    if (row === 'Storage' || row === 'Network' || row === 'Backup') return infraLabel(r.provider, row);
+    const breakdown = r.breakdown || {};
+    const breakdownKey: Record<string, string> = {
+      'Compute / CapEx': breakdown.instance !== undefined ? 'instance' : 'capex',
+      'Storage': 'storage',
+      'Power': 'power',
+      'Facilities': 'facilities',
+      'Operations': 'operations',
+      'Maintenance': 'maintenance',
+      'Software licensing': 'software_licensing',
+      'K8s overhead': 'k8s_overhead',
+      'Network ingress': 'network_ingress',
+      'Network egress': 'network_egress',
+      'Backup': 'backup',
+    };
+    const key = breakdownKey[row];
+    if (row === 'Storage' && breakdown.storage === undefined && ['onprem', 'kubernetes'].includes(p)) {
+      return 'Included in infrastructure baseline';
+    }
+    if (key && breakdown[key] !== undefined) return formatCurrency(breakdown[key], r.currency || 'USD');
+    if (key && ['Network ingress', 'Power', 'Facilities', 'Operations', 'Maintenance', 'Software licensing', 'K8s overhead'].includes(row)) {
+      return formatCurrency(0, r.currency || 'USD');
+    }
     return '-';
   };
 
@@ -97,7 +93,7 @@ const PricingTable: React.FC<Props> = ({ results, multiplier = 1, period = 'mont
                 {results.map((r) => (
                   <td key={r.provider + row} className="py-3 text-sm">
                     {row === costLabel ? (
-                      <span className="font-bold text-slate-900">{new Intl.NumberFormat(undefined, {style:'currency', currency: r.currency || 'USD'}).format(r.total * multiplier)}</span>
+                      <span className="font-bold text-slate-900">{formatCurrency(r.total * multiplier, r.currency || 'USD')}</span>
                     ) : (
                       <span className="text-slate-600">{rowDisplayValue(row, r)}</span>
                     )}

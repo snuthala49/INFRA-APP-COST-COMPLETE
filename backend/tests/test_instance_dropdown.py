@@ -47,8 +47,9 @@ def test_instance_count_multiplier_onprem_and_k8s():
     single = client.post("/api/calculate", json=_payload(instance_count=1)).get_json()
     triple = client.post("/api/calculate", json=_payload(instance_count=3)).get_json()
 
-    assert round(triple["onprem"]["total"], 2) == round(single["onprem"]["total"] * 3, 2)
-    assert round(triple["kubernetes"]["total"], 2) == round(single["kubernetes"]["total"] * 3, 2)
+    for provider in ("onprem", "kubernetes"):
+        assert triple[provider]["breakdown"]["network_egress"] == single[provider]["breakdown"]["network_egress"]
+        assert triple[provider]["breakdown"]["backup"] == single[provider]["breakdown"]["backup"]
 
 
 def test_storage_type_gp3_vs_io2():

@@ -10,6 +10,7 @@ from cloud_providers.aws import aws_cost
 from cloud_providers.azure import azure_cost
 from cloud_providers.gcp import gcp_cost
 from cloud_providers.kubernetes import k8s_cost
+from cloud_providers.catalog_pricing import load_price_provenance
 from utils.onprem_tco import calculate_onprem_tco
 from schemas import CalcPayload
 
@@ -40,7 +41,7 @@ def calculate():
         logger.debug("Validation error: %s", e)
         return jsonify({"error": "invalid input", "details": e.errors()}), 400
 
-    d = payload.dict()
+    d = payload.model_dump()
 
     try:
         return jsonify({
@@ -52,11 +53,14 @@ def calculate():
                 cpu=d["cpu"],
                 ram=d["ram"],
                 storage=d["storage"],
-                network=d["network"],
+                network_ingress_gb_month=d["network_ingress_gb_month"],
+                network_egress_gb_month=d["network_egress_gb_month"],
                 backup=d["backup"],
                 instance_count=d["instance_count"],
             )
         })
+    except ValueError as e:
+        return jsonify({"error": "invalid workload or instance selection", "details": str(e)}), 422
     except Exception as e:
         logger.exception("Unexpected error in /calculate")
         return jsonify({"error": "internal server error"}), 500
@@ -81,14 +85,9 @@ def get_catalog():
         "azure": azure,
         "gcp": gcp,
         "storage_rates": storage_rates,
+        "price_provenance": load_price_provenance(),
     })
 
-
-if __name__ == "__main__":
-    app.run(port=5000, debug=True)
-import resend
-
-resend.api_key = "re_HVBdgGCL_EM9kwMKXchmpKbMeupPD9rSg"
 
 @app.route("/api/contact", methods=["POST"])
 def contact():
@@ -98,7 +97,14 @@ def contact():
     email = data.get("email")
     message = data.get("message")
 
+    api_key = os.getenv("RESEND_API_KEY")
+    if not api_key:
+        return {"error": "Contact service is not configured"}, 503
+
     try:
+        import resend
+
+        resend.api_key = api_key
         # 📩 Mail to YOU
         resend.Emails.send({
             "from": "srinath@infracostiq.com",
@@ -136,3 +142,7 @@ InfraCostIQ Team
 
     except Exception as e:
         return {"error": str(e)}, 500
+
+
+if __name__ == "__main__":
+    app.run(port=5000, debug=True)

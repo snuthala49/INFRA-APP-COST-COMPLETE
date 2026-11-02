@@ -15,6 +15,8 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
         <input
           id={id}
           type="number"
+          min={0}
+          step="any"
           className="input-polished w-full"
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}

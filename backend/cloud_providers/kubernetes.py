@@ -1,4 +1,4 @@
-def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, instance_count=1, **_):
+def k8s_cost(cpu=0, ram=0, storage=0, network_ingress_gb_month=0, network_egress_gb_month=0, backup=0, instance_count=1, network=None, **_):
     """Neutral on-prem Kubernetes baseline model.
 
     Assumptions:
@@ -16,9 +16,11 @@ def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, instance_count=1, **_
         count = 1
 
     # Scale required capacity based on real utilization
-    effective_cpu = cpu / real_util if real_util > 0 else cpu
-    effective_ram = ram / real_util if real_util > 0 else ram
-    effective_storage = storage / real_util if real_util > 0 else storage
+    total_cpu = cpu * count
+    total_ram = ram * count
+    effective_cpu = total_cpu / real_util if real_util > 0 else total_cpu
+    effective_ram = total_ram / real_util if real_util > 0 else total_ram
+    effective_storage = storage
 
     # Baseline infra costs (same assumptions as on-prem)
     amort_years = 5
@@ -48,16 +50,14 @@ def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, instance_count=1, **_
     facilities_cost = 0.15 * capex_monthly
     ops_cost = (0.25 * capex_total / 12)
     maintenance_cost = 0.12 * capex_total / 12
-    software_licensing_cost = (cpu * 80.0) / 12
+    software_licensing_cost = (total_cpu * 80.0) / 12
 
     # Network and backup costs (neutral baseline)
     backup_rate = 0.02   # $ per GB / month
 
-    # Convert Mbps to monthly GB transfer (Mbps → Gbps → GB/month)
-    # 3600s * 24h * 30d = 2,592,000 seconds/month
-    # Mbps * 2,592,000 / 8 bits→bytes / 1024 KB / 1024 MB / 1024 GB = Mbps * 324 GB/month
-    monthly_gb_transfer = network * 324
-    network_cost = monthly_gb_transfer * 0.03
+    if network is not None and not network_egress_gb_month:
+        network_egress_gb_month = float(network) * 324
+    network_cost = max(float(network_egress_gb_month), 0.0) * 0.03
     backup_cost = backup * backup_rate
 
     breakdown = {
@@ -68,12 +68,10 @@ def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, instance_count=1, **_
         "maintenance": round(maintenance_cost, 2),
         "software_licensing": round(software_licensing_cost, 2),
         "k8s_overhead": round(k8s_overhead, 2),
-        "network": round(network_cost, 2),
+        "network_egress": round(network_cost, 2),
+        "network_ingress": 0.0,
         "backup": round(backup_cost, 2),
     }
-    if count > 1:
-        breakdown = {k: round(v * count, 2) for k, v in breakdown.items()}
-
     total = round(sum(breakdown.values()), 2)
 
     return {
@@ -88,10 +86,11 @@ def k8s_cost(cpu=0, ram=0, storage=0, network=0, backup=0, instance_count=1, **_
             "memory_gb": ram,
             "count": count,
             "category": "cluster",
-            "description": f"Requested workload: {cpu} vCPU / {ram} GB RAM. Provisioned baseline for 45% real utilization: {round(effective_cpu, 2)} vCPU / {round(effective_ram, 2)} GB RAM",
+            "description": f"Requested workload: {total_cpu} vCPU / {total_ram} GB RAM across {count} instances. Provisioned baseline for 45% real utilization: {round(effective_cpu, 2)} vCPU / {round(effective_ram, 2)} GB RAM",
             "provisioned_vcpu": round(effective_cpu, 2),
             "provisioned_memory_gb": round(effective_ram, 2),
         },
-        "assumptions": "Per Garnter (Gartner-aligned) K8s baseline: 60–70% target util (65%), 40–50% real util (45%), 5-year amort, 1.5x redundancy, $0.12/kWh, PUE 1.56, CapEx: $500/vCPU (hw+OS+support), $25/GB RAM, $0.15/GB storage (utilization-scaled), facilities 15% of capex monthly, ops 25% annualized capex monthly, maintenance 12% annually, software licensing $80/vCPU/year, +15% k8s overhead, network Mbps→GB at $0.03/GB, backup $0.02/GB",
+        "assumptions": "Kubernetes infrastructure baseline: 45% real utilization, 5-year amortization, 1.5x redundancy, $0.12/kWh, PUE 1.56, monthly network egress at $0.03/GB, backup at $0.02/GB. Storage, network, and backup are scenario totals; CPU and RAM are per instance.",
         "breakdown": breakdown,
+        "price_provenance": {"source": "Static infrastructure assumptions", "region": None, "region_status": "not applicable to this generic baseline", "last_updated": None},
     }
