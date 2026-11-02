@@ -214,6 +214,20 @@ def test_parse_gcp_sku_base_tier_and_currency():
     assert records[0]["dimensions"]["tiered_rates"][0]["unit_price"] == 0.31
 
 
+def test_gcp_database_prices_match_region_groups_and_global_skus():
+    payload = {
+        "skus": [
+            {"skuId": "US-GROUP", "description": "Cloud SQL CPU", "serviceRegions": ["us"], "pricingInfo": [{"pricingExpression": {"usageUnit": "h", "tieredRates": [{"unitPrice": {"currencyCode": "USD", "units": "1", "nanos": 0}}]}}]},
+            {"skuId": "GLOBAL", "description": "Cloud SQL global backup", "serviceRegions": ["global"], "pricingInfo": [{"pricingExpression": {"usageUnit": "GiBy.mo", "tieredRates": [{"unitPrice": {"currencyCode": "USD", "units": "2", "nanos": 0}}]}}]},
+            {"skuId": "EU-ONLY", "description": "Cloud SQL CPU", "serviceRegions": ["europe"], "pricingInfo": [{"pricingExpression": {"usageUnit": "h", "tieredRates": [{"unitPrice": {"currencyCode": "USD", "units": "3", "nanos": 0}}]}}]},
+        ]
+    }
+    records = parse_gcp_skus(payload, "cloud_sql", "us-central1")
+    assert {record["sku"] for record in records} == {"US-GROUP", "GLOBAL"}
+    matched_scopes = {record["sku"]: record["dimensions"]["matched_service_region"] for record in records}
+    assert matched_scopes == {"US-GROUP": "us", "GLOBAL": "global"}
+
+
 def test_gcp_database_sync_requires_api_key(monkeypatch):
     monkeypatch.delenv("GOOGLE_CLOUD_BILLING_API_KEY", raising=False)
     with pytest.raises(RuntimeError, match="GOOGLE_CLOUD_BILLING_API_KEY"):
@@ -370,3 +384,36 @@ def test_database_quote_rejects_rate_from_another_region(monkeypatch):
     })
     assert response.status_code == 422
     assert "No cached" in response.get_json()["error"]
+
+
+def test_database_quote_applies_gcp_tiered_rates(monkeypatch):
+    record = {
+        "rate_id": "cloudsql-tiered",
+        "provider": "gcp",
+        "service": "cloud_sql",
+        "region": "us-central1",
+        "component": "storage",
+        "sku": "Cloud SQL storage",
+        "unit": "GB-month",
+        "unit_price": 0.1,
+        "currency": "USD",
+        "source": "Cloud Billing Catalog",
+        "effective_date": "2026-10-01",
+            "dimensions": {
+                "matched_service_region": "us",
+                "tiered_rates": [
+                    {"start_usage_amount": 0, "unit_price": 0.1},
+                    {"start_usage_amount": 100, "unit_price": 0.2},
+                ],
+            },
+    }
+    monkeypatch.setattr(app_module, "load_database_price_cache", lambda: {"updated_at": "now", "providers": {"gcp": {"status": "current"}}, "records": [record]})
+    response = app_module.app.test_client().post("/api/database/calculate", json={
+        "provider": "gcp",
+        "service": "cloud_sql",
+        "region": "us-central1",
+        "line_items": [{"rate_id": "cloudsql-tiered", "quantity": 150}],
+    })
+    assert response.status_code == 200
+    assert response.get_json()["total"] == 20.0
+    assert response.get_json()["line_items"][0]["price_region_scope"] == "us"

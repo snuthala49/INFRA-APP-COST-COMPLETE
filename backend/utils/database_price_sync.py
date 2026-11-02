@@ -195,12 +195,31 @@ def _gcp_unit_price(value: Dict) -> float:
     return float(value.get("units", 0)) + float(value.get("nanos", 0)) / 1_000_000_000
 
 
+def _gcp_matching_service_region(region: str, service_regions: List[str]) -> Optional[str]:
+    if not service_regions:
+        return "global"
+    normalized_region = region.lower()
+    normalized_scopes = [scope.lower() for scope in service_regions]
+    if "global" in normalized_scopes:
+        return "global"
+    if normalized_region in normalized_scopes:
+        return normalized_region
+    region_group = normalized_region.split("-", 1)[0]
+    if region_group in normalized_scopes:
+        return region_group
+    for scope in normalized_scopes:
+        if normalized_region.startswith(scope + "-"):
+            return scope
+    return None
+
+
 def parse_gcp_skus(data: Dict, service: str, region: str) -> List[Dict]:
     """Normalize Google Cloud Billing SKUs, retaining the first tiered rate."""
     records = []
     for sku in data.get("skus", []):
         regions = sku.get("serviceRegions", [])
-        if regions and region not in regions:
+        matched_service_region = _gcp_matching_service_region(region, regions)
+        if matched_service_region is None:
             continue
         for price_info in sku.get("pricingInfo", []):
             expression = price_info.get("pricingExpression", {})
@@ -223,6 +242,7 @@ def parse_gcp_skus(data: Dict, service: str, region: str) -> List[Dict]:
                 dimensions={
                     "description": sku.get("description"),
                     "service_regions": regions,
+                    "matched_service_region": matched_service_region,
                     "tiered_rates": [
                         {"start_usage_amount": tier.get("startUsageAmount", 0), "unit_price": _gcp_unit_price(tier.get("unitPrice", {}))}
                         for tier in tiers
